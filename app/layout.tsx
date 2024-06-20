@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { SessionProvider } from "next-auth/react";
+import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Messenger Clone",
@@ -18,13 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(
-        "min-h-screen bg-background font-inter antialiased",
-        inter.variable
-      )}>
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-inter antialiased",
+          inter.variable
+        )}
+      >
+        {children}
+        <Toaster position="top-center" />
       </body>
     </html>
   );
