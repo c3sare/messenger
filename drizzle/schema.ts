@@ -106,7 +106,6 @@ export const conversationUserRelations = relations(
 
 export const conversation = pgTable("conversation", {
   id: serial("id").notNull().primaryKey(),
-  url: text("url").notNull(),
   lastMessageAt: timestamp("last_message_at", { mode: "date" }),
   name: text("name"),
   isGroup: boolean("is_group"),
