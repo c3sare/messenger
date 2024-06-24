@@ -10,6 +10,7 @@ import { useZodForm } from "@/hooks/useZodForm";
 import { z } from "zod";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { FormProvider } from "react-hook-form";
 
 type SettingsModalProps = {
   currentUser: typeof users.$inferSelect;
@@ -60,59 +61,61 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
-        <form onSubmit={onSubmit}>
-          <div className="space-y-12">
-            <div className="border-b border-gray-900/10 pb-12">
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Profile
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Edit your public information.
-              </p>
-              <div className="mt-10 flex flex-col gap-y-8">
-                <FormInput
-                  control={form.control}
-                  disabled={form.isLoading}
-                  label="Name"
-                  name="name"
-                />
-                <div>
-                  <label className="block text-sm font-medium leading-6 text-gray-900">
-                    Photo
-                  </label>
-                  <div className="mt-2 flex items-center gap-x-3">
-                    <Image
-                      width={48}
-                      height={48}
-                      className="rounded-full"
-                      src={
-                        image || currentUser?.image || "/images/placeholder.jpg"
-                      }
-                      alt="Avatar"
-                    />
-                    <CldUploadButton
-                      options={{ maxFiles: 1 }}
-                      onUpload={handleUpload}
-                      uploadPreset="g2efbtdv"
-                    >
-                      <Button disabled={isLoading} variant="secondary" type="button">
-                        Change
-                      </Button>
-                    </CldUploadButton>
+        <FormProvider {...form}>
+          <form onSubmit={onSubmit}>
+            <div className="space-y-12">
+              <div className="border-b border-gray-900/10 pb-12">
+                <h2 className="text-base font-semibold leading-7 text-gray-900">
+                  Profile
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Edit your public information.
+                </p>
+                <div className="mt-10 flex flex-col gap-y-8">
+                  <FormInput
+                    control={form.control}
+                    disabled={form.isLoading}
+                    label="Name"
+                    name="name"
+                  />
+                  <div>
+                    <label className="block text-sm font-medium leading-6 text-gray-900">
+                      Photo
+                    </label>
+                    <div className="mt-2 flex items-center gap-x-3">
+                      <Image
+                        width={48}
+                        height={48}
+                        className="rounded-full"
+                        src={
+                          image || currentUser?.image || "/images/placeholder.jpg"
+                        }
+                        alt="Avatar"
+                      />
+                      <CldUploadButton
+                        options={{ maxFiles: 1 }}
+                        onUpload={handleUpload}
+                        uploadPreset="g2efbtdv"
+                      >
+                        <Button disabled={isLoading} variant="secondary" type="button">
+                          Change
+                        </Button>
+                      </CldUploadButton>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div className="mt-6 flex items-center justify-end gap-x-6">
+                <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button disabled={isLoading} type="submit">
+                  Save
+                </Button>
+              </div>
             </div>
-            <div className="mt-6 flex items-center justify-end gap-x-6">
-              <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button disabled={isLoading} type="submit">
-                Save
-              </Button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </FormProvider>
       </DialogContent>
     </Dialog>
   );

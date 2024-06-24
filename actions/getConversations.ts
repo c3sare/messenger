@@ -16,7 +16,25 @@ const getConversations = async () => {
       with: {
         conversations: {
           with: {
-            conversation: true,
+            conversation: {
+              with: {
+                messages: {
+                  with: {
+                    sender: true,
+                    seenBy: {
+                      with: {
+                        user: true,
+                      },
+                    },
+                  },
+                },
+                users: {
+                  with: {
+                    user: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -26,7 +44,13 @@ const getConversations = async () => {
 
     return user.conversations.map((conversation) => ({
       ...conversation.conversation,
-      joinedAt: conversation.joinedAt,
+      users: conversation.conversation.users.map((user) => user.user),
+      messages: conversation.conversation.messages.map(
+        ({ seenBy, ...message }) => ({
+          ...message,
+          seen: seenBy.map(({ user }) => user),
+        })
+      ),
     }));
   } catch (error: any) {
     return [];

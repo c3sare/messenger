@@ -15,16 +15,7 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
   return (
     <div className="relative">
       <div
-        className="
-                relative
-                inline-block
-                rounded-full
-                overflow-hidden
-                h-9
-                w-9
-                md:h-11
-                md:w-11
-            "
+        className="relative inline-block rounded-full overflow-hidden size-9 md:size-11"
       >
         <Image
           alt="Avatar"

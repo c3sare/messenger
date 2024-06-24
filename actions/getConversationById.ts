@@ -5,7 +5,7 @@ const getConversationById = async (conversationId: number) => {
   try {
     const currentUser = await getCurrentUser();
 
-    if (!currentUser?.email) {
+    if (!currentUser?.id) {
       return null;
     }
 

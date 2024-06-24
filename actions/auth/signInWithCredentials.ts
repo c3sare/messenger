@@ -25,6 +25,6 @@ export const signInWithCredentials = action
 
     await signIn("credentials", {
       email,
-      redirectTo: "/dashboard",
+      redirectTo: "/conversations",
     });
   });

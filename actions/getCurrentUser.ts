@@ -12,7 +12,7 @@ const getCurrentUser = async () => {
     }
 
     const currentUser = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.email, userId),
+      where: (user, { eq }) => eq(user.id, userId),
     });
 
     if (!currentUser) {

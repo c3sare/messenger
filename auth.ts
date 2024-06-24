@@ -37,7 +37,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id as string;
       }
 
-      console.log("jwt callback");
       return token;
     },
     session: async ({ session, token }) => {
@@ -45,16 +44,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as unknown as string;
       }
 
-      console.log("session callback");
-
       return session;
     },
   },
   pages: {
-    signIn: "/dashboard",
+    signIn: "/conversations",
     signOut: "/",
     error: "/",
-    newUser: "/dashboard",
+    newUser: "/conversations",
     verifyRequest: "/",
   },
   session: {

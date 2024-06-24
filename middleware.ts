@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/conversations", "/users"];
 
 export default auth((req) => {
   const isAuthorized = !!req.auth?.user;
@@ -10,7 +10,7 @@ export default auth((req) => {
     if (protectedRoutes.some((url) => req.nextUrl.pathname.startsWith(url)))
       return NextResponse.redirect(new URL("/", req.url));
   } else if (req.nextUrl.pathname === "/")
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/conversations", req.url));
 
   return;
 });
