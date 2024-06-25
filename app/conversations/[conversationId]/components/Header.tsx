@@ -2,18 +2,16 @@
 
 import Avatar from "@/components/Avatar";
 import useOtherUser from "@/hooks/useOtherUser";
-import { conversation, users } from "@/drizzle/schema";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import ProfileDrawer from "./ProfileDrawer";
 import AvatarGroup from "@/components/AvatarGroup";
 import useActiveList from "@/hooks/useActiveList";
 import { ChevronLeftIcon, EllipsisIcon } from "lucide-react";
+import { FullConversationType } from "@/types";
 
 type HeaderProps = {
-  conversation: (typeof conversation.$inferSelect) & {
-    users: (typeof users.$inferSelect)[];
-  };
+  conversation: FullConversationType;
 };
 
 const Header: React.FC<HeaderProps> = ({ conversation }) => {

@@ -1,7 +1,7 @@
 import useOtherUser from "@/hooks/useOtherUser";
 import { conversation, users } from "@/drizzle/schema";
 import { format } from "date-fns";
-import { useMemo, Fragment, useState } from "react";
+import { useMemo, useState } from "react";
 
 import Avatar from "@/components/Avatar";
 import ConfirmModal from "./ConfirmModal";
@@ -9,11 +9,10 @@ import AvatarGroup from "@/components/AvatarGroup";
 import useActiveList from "@/hooks/useActiveList";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { CrossIcon, TrashIcon } from "lucide-react";
+import type { FullConversationType } from "@/types";
 
 type ProfileDrawerProps = {
-  data: (typeof conversation.$inferSelect) & {
-    users: (typeof users.$inferSelect)[];
-  };
+  data: FullConversationType;
   isOpen: boolean;
   onClose: () => void;
 };

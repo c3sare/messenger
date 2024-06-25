@@ -11,12 +11,12 @@ import { useSession } from "next-auth/react";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
 import { UserPlusIcon } from "lucide-react";
-import getConversations from "@/actions/getConversations";
 import { cn } from "@/lib/utils";
-
-type Conversation = Awaited<ReturnType<typeof getConversations>>[number];
+import getConversations from "@/actions/getConversations";
 
 type User = typeof users.$inferSelect;
+
+type Conversation = Awaited<ReturnType<typeof getConversations>>[number];
 
 type ConversationListProps = {
   initialItems: Conversation[];

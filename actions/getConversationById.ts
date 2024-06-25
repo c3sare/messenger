@@ -21,6 +21,16 @@ const getConversationById = async (conversationId: number) => {
             },
           },
         },
+        messages: {
+          with: {
+            sender: true,
+            seenBy: {
+              with: {
+                user: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -33,6 +43,10 @@ const getConversationById = async (conversationId: number) => {
       users: conversation.users.map((user) => ({
         ...user.user,
         joinedAt: user.joinedAt,
+      })),
+      messages: conversation.messages.map(({ seenBy, ...message }) => ({
+        ...message,
+        seen: seenBy.map(({ user }) => user),
       })),
     };
   } catch (error) {

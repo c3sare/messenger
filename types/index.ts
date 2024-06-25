@@ -1,17 +1,7 @@
-import { conversation, message, users } from "@/drizzle/schema";
+import type getConversationById from "@/actions/getConversationById";
 
-type User = typeof users.$inferSelect;
+export type FullConversationType = NonNullable<
+  Awaited<ReturnType<typeof getConversationById>>
+>;
 
-type Message = typeof message.$inferSelect;
-
-type Conversation = typeof conversation.$inferSelect;
-
-export type FullMessageType = Message & {
-  sender: User;
-  seen: User[];
-};
-
-export type FullConversationType = Conversation & {
-  users: User[];
-  messages: FullMessageType[];
-};
+export type FullMessageType = FullConversationType["messages"][number];

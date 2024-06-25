@@ -1,7 +1,7 @@
 "use client";
 
 import useConversation from "@/hooks/useConversation";
-import { FullMessageType } from "@/types";
+import type { FullMessageType } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import MessageBox from "./MessageBox";
 import axios from "axios";
@@ -23,41 +23,45 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
   }, [conversationId]);
 
   useEffect(() => {
-    pusherClient.subscribe(conversationId.toString());
-    bottomRef?.current?.scrollIntoView();
-
-    const messageHandler = (message: FullMessageType) => {
-      axios.post(`/api/conversations/${conversationId}/seen`);
-
-      setMessages((current) => {
-        if (find(current, { id: message.id })) {
-          return current;
-        }
-
-        return [...current, message];
-      });
+    if (conversationId) {
+      pusherClient.subscribe(conversationId.toString());
       bottomRef?.current?.scrollIntoView();
-    };
 
-    const updateMessageHandler = (newMessage: FullMessageType) => {
-      setMessages((current) =>
-        current.map((currentMessage) => {
-          if (currentMessage.id === newMessage.id) {
-            return newMessage;
+      const messageHandler = (message: FullMessageType) => {
+        axios.post(`/api/conversations/${conversationId}/seen`);
+
+        setMessages((current) => {
+          if (find(current, { id: message.id })) {
+            return current;
           }
 
-          return currentMessage;
-        })
-      );
-    };
+          return [...current, message];
+        });
+        bottomRef?.current?.scrollIntoView();
+      };
 
-    pusherClient.bind("messages:new", messageHandler);
-    pusherClient.bind("message:update", updateMessageHandler);
+      const updateMessageHandler = (newMessage: FullMessageType) => {
+        setMessages((current) =>
+          current.map((currentMessage) => {
+            if (currentMessage.id === newMessage.id) {
+              return newMessage;
+            }
+
+            return currentMessage;
+          })
+        );
+      };
+
+      pusherClient.bind("messages:new", messageHandler);
+      pusherClient.bind("message:update", updateMessageHandler);
+    }
 
     return () => {
-      pusherClient.unsubscribe(conversationId.toString());
-      pusherClient.unbind("messages:new");
-      pusherClient.unbind("message:update");
+      if (conversationId) {
+        pusherClient.unsubscribe(conversationId.toString());
+        pusherClient.unbind("messages:new");
+        pusherClient.unbind("message:update");
+      }
     };
   }, [conversationId]);
 

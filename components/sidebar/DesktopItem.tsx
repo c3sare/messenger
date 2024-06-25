@@ -1,41 +1,28 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { Slot } from "@radix-ui/react-slot";
 
-type DekstopItemProps = {
-  label: string;
-  icon: any;
-  href: string;
-  onClick?: () => void;
-  active?: boolean;
+type DekstopItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+  asChild?: boolean;
 };
 
 const DesktopItem: React.FC<DekstopItemProps> = ({
-  label,
-  icon: Icon,
-  href,
-  onClick,
-  active,
+  children,
+  className,
+  asChild,
+  ...props
 }) => {
-  const handleClick = () => {
-    if (onClick) {
-      return onClick();
-    }
-  };
+
+  const Comp = asChild ? Slot : "button";
 
   return (
-    <li onClick={handleClick}>
-      <Link
-        href={href}
-        className={cn("group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold text-gray-500 hover:text-black hover:bg-gray-100",
-          active && "bg-gray-100 text-black"
-        )}
-      >
-        <Icon className="h-6 w-6 shrink-0" />
-        <span className="sr-only">{label}</span>
-      </Link>
-    </li>
+    <Comp
+      className={cn("group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold text-gray-500 hover:text-black hover:bg-gray-100 [&>svg]:size-6 [&>svg]:shrink-0",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </Comp>
   );
 };
 

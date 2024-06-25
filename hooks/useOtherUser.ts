@@ -1,15 +1,13 @@
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
-import { FullConversationType } from "../types";
-import { users } from "@/drizzle/schema";
+import { FullConversationType } from "@/types";
+import getConversations from "@/actions/getConversations";
 
-const useOtherUser = (
-  conversation:
-    | FullConversationType
-    | {
-        users: (typeof users.$inferSelect)[];
-      }
-) => {
+type Props =
+  | Awaited<ReturnType<typeof getConversations>>[number]
+  | FullConversationType;
+
+const useOtherUser = (conversation: Props) => {
   const session = useSession();
 
   const otherUser = useMemo(() => {

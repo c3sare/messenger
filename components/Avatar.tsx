@@ -1,11 +1,11 @@
 "use client";
 
-import { users } from "@/drizzle/schema";
 import Image from "next/image";
 import useActiveList from "../hooks/useActiveList";
+import { FullConversationType } from "@/types";
 
 interface AvatarProps {
-  user?: typeof users.$inferSelect;
+  user?: FullConversationType["messages"][number]["sender"] | FullConversationType["users"][number]
 }
 
 const Avatar: React.FC<AvatarProps> = ({ user }) => {

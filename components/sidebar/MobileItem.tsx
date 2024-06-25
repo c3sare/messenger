@@ -1,38 +1,27 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { Slot } from "@radix-ui/react-slot";
 
-type MobileItemProps = {
-  href: string;
-  active?: boolean;
-  icon: any;
-  onClick?: () => void;
+type MobileItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+  asChild?: boolean;
 };
 
 const MobileItem: React.FC<MobileItemProps> = ({
-  href,
-  active,
-  icon: Icon,
-  onClick,
+  children,
+  asChild,
+  className
 }) => {
-  const handleClick = () => {
-    if (onClick) {
-      return onClick();
-    }
-  };
+
+  const Comp = asChild ? Slot : "button";
 
   return (
-    <Link
-      href={href}
-      onClick={handleClick}
+    <Comp
       className={cn(
-        "group flex gap-x-3 text-sm leading-6 font-semibold w-full justify-center p-4 text-gray-500 hover:text-black hover:bg-gray-100",
-        active && "bg-gray-100 text-black"
+        "group flex gap-x-3 text-sm leading-6 font-semibold w-full justify-center p-4 text-gray-500 hover:text-black hover:bg-gray-100 [&>svg]:size-6",
+        className
       )}
     >
-      <Icon className="h-6 w-6" />
-    </Link>
+      {children}
+    </Comp>
   );
 };
 

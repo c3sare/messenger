@@ -7,9 +7,10 @@ import useOtherUser from "@/hooks/useOtherUser";
 import Avatar from "@/components/Avatar";
 import AvatarGroup from "@/components/AvatarGroup";
 import { cn } from "@/lib/utils";
+import getConversations from "@/actions/getConversations";
 
 type ConversationBoxProps = {
-  data: FullConversationType;
+  data: Awaited<ReturnType<typeof getConversations>>[number];
   selected: boolean;
 };
 

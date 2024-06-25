@@ -1,10 +1,10 @@
 "use client";
 
-import { users } from "@/drizzle/schema";
+import { FullConversationType } from "@/types";
 import Image from "next/image";
 
 interface AvatarGroupProps {
-  users?: (typeof users.$inferSelect)[];
+  users?: FullConversationType["users"];
 }
 
 const AvatarGroup: React.FC<AvatarGroupProps> = ({ users }) => {

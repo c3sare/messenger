@@ -1,31 +1,45 @@
-"use client";
-
-import useConversation from "@/hooks/useConversation";
-import useRoutes from "@/hooks/useRoutes";
+import Link from "next/link";
 import MobileItem from "./MobileItem";
+import { LogOutIcon, MessageCircleMoreIcon, UsersIcon } from "lucide-react";
+import { signOut } from "@/auth";
+
+const routes = [
+  {
+    label: "Chat",
+    href: "/conversations",
+    icon: <MessageCircleMoreIcon />,
+  },
+  {
+    label: "Users",
+    href: "/users",
+    icon: <UsersIcon />
+  },
+];
 
 const MobileFooter = () => {
-  const routes = useRoutes();
-  const { isOpen } = useConversation();
-
-  if (isOpen) {
-    return null;
+  const logout = async () => {
+    "use server";
+    await signOut();
   }
 
   return (
-    <div
+    <form
       className="fixed justify-between w-full bottom-0 z-40 flex items-center bg-white border-t-[1px] lg:hidden"
     >
       {routes.map((route) => (
         <MobileItem
           key={route.href}
-          href={route.href}
-          active={route.active}
-          icon={route.icon}
-          onClick={route.onClick}
-        />
+          asChild
+        >
+          <Link href={route.href}>
+            {route.icon}
+          </Link>
+        </MobileItem>
       ))}
-    </div>
+      <MobileItem formAction={logout}>
+        <LogOutIcon />
+      </MobileItem>
+    </form>
   );
 };
 

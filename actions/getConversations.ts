@@ -1,10 +1,10 @@
 import { db } from "@/drizzle";
-import { auth } from "@/auth";
+import getCurrentUser from "./getCurrentUser";
 
 const getConversations = async () => {
-  const session = await auth();
+  const currentUser = await getCurrentUser();
 
-  const userId = session?.user?.id;
+  const userId = currentUser?.id;
 
   if (!userId) {
     return [];
@@ -23,7 +23,11 @@ const getConversations = async () => {
                     sender: true,
                     seenBy: {
                       with: {
-                        user: true,
+                        user: {
+                          columns: {
+                            hashedPassword: false,
+                          },
+                        },
                       },
                     },
                   },
@@ -44,7 +48,10 @@ const getConversations = async () => {
 
     return user.conversations.map((conversation) => ({
       ...conversation.conversation,
-      users: conversation.conversation.users.map((user) => user.user),
+      users: conversation.conversation.users.map((user) => ({
+        ...user.user,
+        joinedAt: user.joinedAt,
+      })),
       messages: conversation.conversation.messages.map(
         ({ seenBy, ...message }) => ({
           ...message,
