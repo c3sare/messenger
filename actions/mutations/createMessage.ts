@@ -1,19 +1,22 @@
+"use server";
+
 import { db } from "@/drizzle";
-import getCurrentUser from "@/actions/getCurrentUser";
-import { NextResponse } from "next/server";
-import { pusherServer } from "@/lib/pusher";
 import { conversation, message, messageRead } from "@/drizzle/schema";
+import { pusherServer } from "@/lib/pusher";
+import { authAction } from "@/lib/safe-action";
+import { createMessageSchema } from "@/validators/createMessageSchema";
 import { eq } from "drizzle-orm";
 
-export async function POST(request: Request) {
-  try {
-    const currentUser = await getCurrentUser();
-    const bodyJson = await request.json();
-    const { message: body, image, conversationId } = bodyJson;
+export const createMessage = authAction.schema(createMessageSchema).action(
+  async ({
+    parsedInput,
+    ctx: {
+      user: { id: userId },
+    },
+  }) => {
+    const { conversationId, image, body } = parsedInput;
 
-    if (!currentUser?.id || !currentUser?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    if (!userId) throw new Error("User not found");
 
     const newMessage = (
       await db
@@ -22,7 +25,7 @@ export async function POST(request: Request) {
           body,
           image,
           conversationId,
-          senderId: currentUser.id,
+          senderId: userId,
         })
         .returning()
     ).at(0);
@@ -30,7 +33,7 @@ export async function POST(request: Request) {
     if (!newMessage) throw new Error("Message not created");
 
     await db.insert(messageRead).values({
-      userId: currentUser.id,
+      userId,
       messageId: newMessage.id,
     });
 
@@ -87,9 +90,6 @@ export async function POST(request: Request) {
       });
     });
 
-    return NextResponse.json(newMessage);
-  } catch (error: any) {
-    console.log(error, "ERROR_MESSAGES");
-    return new NextResponse("InternalError", { status: 500 });
+    return newMessage;
   }
-}
+);

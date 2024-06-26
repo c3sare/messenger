@@ -5,34 +5,25 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import ConversationBox from "./ConversationBox";
-import GroupChatModal from "./GroupChatModal";
-import { users } from "@/drizzle/schema";
 import { useSession } from "next-auth/react";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
-import { UserPlusIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import getConversations from "@/actions/getConversations";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-
-type User = typeof users.$inferSelect;
 
 type Conversation = Awaited<ReturnType<typeof getConversations>>[number];
 
 type ConversationListProps = {
   initialItems: Conversation[];
-  users: User[];
 };
 
 const ConversationList: React.FC<ConversationListProps> = ({
   initialItems,
-  users,
 }) => {
   const session = useSession();
   const [items, setItems] = useState(initialItems);
   const router = useRouter();
 
-  const { conversationId, isOpen } = useConversation();
+  const { conversationId } = useConversation();
 
   const pusherKey = useMemo(() => {
     return session.data?.user?.id;
@@ -91,40 +82,13 @@ const ConversationList: React.FC<ConversationListProps> = ({
       pusherClient.unbind("conversation:remove", removeHandler);
     };
   }, [conversationId, pusherKey, router]);
-  return (
-    <aside
-      className={cn("fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200",
-        isOpen ? "hidden" : "block w-full left-0"
-      )}
-    >
-      <div className="px-5">
-        <div className="flex justify-between mb-4 pt-4">
-          <div className="text-2xl font-bold text-neutral-800">Messages</div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <button
-                className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition"
-              >
-                <UserPlusIcon size={20} />
-              </button>
-            </DialogTrigger>
-            <DialogContent>
-              <GroupChatModal
-                users={users}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-        {items.map((item) => (
-          <ConversationBox
-            key={item.id}
-            data={item}
-            selected={conversationId === item.id}
-          />
-        ))}
-      </div>
-    </aside>
-  );
+  return items.map((item) => (
+    <ConversationBox
+      key={item.id}
+      data={item}
+      selected={conversationId === item.id}
+    />
+  ));
 };
 
 export default ConversationList;
