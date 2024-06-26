@@ -13,6 +13,7 @@ import { find } from "lodash";
 import { UserPlusIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import getConversations from "@/actions/getConversations";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 type User = typeof users.$inferSelect;
 
@@ -29,14 +30,13 @@ const ConversationList: React.FC<ConversationListProps> = ({
 }) => {
   const session = useSession();
   const [items, setItems] = useState(initialItems);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
   const { conversationId, isOpen } = useConversation();
 
   const pusherKey = useMemo(() => {
-    return session.data?.user?.email;
-  }, [session.data?.user?.email]);
+    return session.data?.user?.id;
+  }, [session.data?.user?.id]);
 
   useEffect(() => {
     if (!pusherKey) {
@@ -92,37 +92,38 @@ const ConversationList: React.FC<ConversationListProps> = ({
     };
   }, [conversationId, pusherKey, router]);
   return (
-    <>
-      <GroupChatModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        users={users}
-      />
-      <aside
-        className={cn("fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200",
-          isOpen ? "hidden" : "block w-full left-0"
-        )}
-      >
-        <div className="px-5">
-          <div className="flex justify-between mb-4 pt-4">
-            <div className="text-2xl font-bold text-neutral-800">Messages</div>
-            <div
-              className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <UserPlusIcon size={20} />
-            </div>
-          </div>
-          {items.map((item) => (
-            <ConversationBox
-              key={item.id}
-              data={item}
-              selected={conversationId === item.id}
-            />
-          ))}
+    <aside
+      className={cn("fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200",
+        isOpen ? "hidden" : "block w-full left-0"
+      )}
+    >
+      <div className="px-5">
+        <div className="flex justify-between mb-4 pt-4">
+          <div className="text-2xl font-bold text-neutral-800">Messages</div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <button
+                className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition"
+              >
+                <UserPlusIcon size={20} />
+              </button>
+            </DialogTrigger>
+            <DialogContent>
+              <GroupChatModal
+                users={users}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
-      </aside>
-    </>
+        {items.map((item) => (
+          <ConversationBox
+            key={item.id}
+            data={item}
+            selected={conversationId === item.id}
+          />
+        ))}
+      </div>
+    </aside>
   );
 };
 

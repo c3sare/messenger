@@ -14,7 +14,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
 
     const conversationId = parseInt(params.conversationId);
 
-    if (!currentUser?.id || !currentUser?.email) {
+    if (!currentUser?.id) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
@@ -40,10 +40,13 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       return NextResponse.json(conversation);
     }
 
-    await db.insert(messageRead).values({
-      userId: currentUser.id,
-      messageId: lastMessage.id,
-    });
+    await db
+      .insert(messageRead)
+      .values({
+        userId: currentUser.id,
+        messageId: lastMessage.id,
+      })
+      .onConflictDoNothing();
 
     const { seenBy, ...updateMessage } = (await db.query.message.findFirst({
       where: (message, { eq }) => eq(message.id, lastMessage.id),
@@ -55,7 +58,7 @@ export async function POST(request: Request, { params }: { params: IParams }) {
 
     const seenIds = seenBy.map((item) => item.userId);
 
-    await pusherServer.trigger(currentUser.email, "conversation:update", {
+    await pusherServer.trigger(currentUser.id, "conversation:update", {
       id: conversationId,
       messages: [{ ...updateMessage, seenIds }],
     });
@@ -64,10 +67,14 @@ export async function POST(request: Request, { params }: { params: IParams }) {
       return NextResponse.json(conversation);
     }
 
-    await pusherServer.trigger(conversationId.toString(), "message:update", {
-      ...updateMessage,
-      seenIds,
-    });
+    await pusherServer.trigger(
+      `conversation-${conversationId}`,
+      "message:update",
+      {
+        ...updateMessage,
+        seenIds,
+      }
+    );
 
     return NextResponse.json({ ...updateMessage, seenIds });
   } catch (error: any) {

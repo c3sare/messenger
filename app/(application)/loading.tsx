@@ -1,7 +1,7 @@
 import LoadingModal from "@/components/LoadingModal";
 
-const Loading = () => {
+const LoadingApplication = () => {
   return <LoadingModal />;
 };
 
-export default Loading;
+export default LoadingApplication;

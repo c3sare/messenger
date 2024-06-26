@@ -51,9 +51,34 @@ export async function POST(request: Request) {
 
     if (!updatedConversation) throw new Error("Conversation not found");
 
-    await pusherServer.trigger(conversationId, "messages:new", newMessage);
+    const updateMessage = await db.query.message.findFirst({
+      where: (message, { eq }) => eq(message.id, newMessage.id),
+      with: {
+        sender: true,
+        seenBy: {
+          with: {
+            user: true,
+          },
+        },
+      },
+    });
 
-    const lastMessage = updatedConversation.messages.at(-1);
+    if (!updateMessage) throw new Error("Message not found");
+
+    const { seenBy, ...updateMessageBody } = updateMessage;
+
+    const transformedMessage = {
+      ...updateMessageBody,
+      seen: seenBy.map(({ user }) => user),
+    };
+
+    await pusherServer.trigger(
+      `conversation-${conversationId}`,
+      "messages:new",
+      transformedMessage
+    );
+
+    const lastMessage = transformedMessage;
 
     updatedConversation.users.map((user) => {
       pusherServer.trigger(user.userId, "conversation:update", {

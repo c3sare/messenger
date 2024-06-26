@@ -1,39 +1,25 @@
-import getCurrentUser from "@/actions/getCurrentUser";
-import { NextResponse } from "next/server";
+"use server";
+
 import { db } from "@/drizzle";
-import { pusherServer } from "@/lib/pusher";
 import { conversation, conversationUser } from "@/drizzle/schema";
-import { z } from "zod";
+import { pusherServer } from "@/lib/pusher";
+import { authAction } from "@/lib/safe-action";
+import { createUserSchema } from "@/validators/createUserSchema";
 import { and, eq, inArray, isNull, or, sql } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
-const schema = z.object({
-  userId: z.string(),
-  isGroup: z.boolean(),
-  members: z.array(z.object({ value: z.string() })),
-  name: z.string(),
-});
+export const createConversation = authAction
+  .schema(createUserSchema)
+  .action(async ({ parsedInput, ctx: { user: currentUser } }) => {
+    if ("isGroup" in parsedInput) {
+      const { members, name } = parsedInput;
 
-export async function POST(request: Request) {
-  try {
-    const currentUser = await getCurrentUser();
-    const body = await request.json();
-    const { userId, isGroup, members, name } = schema.parse(body);
-
-    if (!currentUser?.id || !currentUser?.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
-    if (isGroup && (!members || members.length < 2 || !name)) {
-      return new NextResponse("Invalid data", { status: 400 });
-    }
-
-    if (isGroup) {
       const newConversation = (
         await db
           .insert(conversation)
           .values({
             name,
-            isGroup,
+            isGroup: true,
           })
           .returning()
       ).at(0);
@@ -45,17 +31,24 @@ export async function POST(request: Request) {
         .values([
           ...members.map((member: { value: string }) => ({
             userId: member.value,
+            isOwner: member.value === currentUser.id,
             conversationId: newConversation.id,
           })),
         ])
         .returning();
 
-      conversationUsers.forEach((user) => {
-        pusherServer.trigger(user.userId, "conversation:new", newConversation);
-      });
+      pusherServer.trigger(
+        conversationUsers.map((user) => user.userId),
+        "conversation:new",
+        newConversation
+      );
 
-      return NextResponse.json(newConversation);
+      revalidatePath("/conversations", "layout");
+
+      return newConversation;
     }
+
+    const { userId } = parsedInput;
 
     const existingConveration = (
       await db
@@ -72,14 +65,14 @@ export async function POST(request: Request) {
         .having(sql`count(${conversationUser.conversationId}) > 1`)
         .where(
           and(
-            inArray(conversationUser.userId, [currentUser.id, userId]),
+            inArray(conversationUser.userId, [currentUser.id!, userId]),
             or(eq(conversation.isGroup, false), isNull(conversation.isGroup))
           )
         )
     ).at(0);
 
     if (existingConveration) {
-      return NextResponse.json(existingConveration);
+      return existingConveration;
     }
 
     const newConversation = (
@@ -92,7 +85,7 @@ export async function POST(request: Request) {
       .insert(conversationUser)
       .values([
         {
-          userId: currentUser.id,
+          userId: currentUser.id!,
           conversationId: newConversation.id,
         },
         {
@@ -102,12 +95,13 @@ export async function POST(request: Request) {
       ])
       .returning();
 
-    users.map((user) => {
-      pusherServer.trigger(user.userId, "conversation:new", newConversation);
-    });
+    pusherServer.trigger(
+      users.map((user) => user.userId),
+      "conversation:new",
+      newConversation
+    );
 
-    return NextResponse.json({ ...newConversation, users });
-  } catch (error: any) {
-    return new NextResponse("Internal Error", { status: 500 });
-  }
-}
+    revalidatePath("/conversations", "layout");
+
+    return { ...newConversation, users };
+  });

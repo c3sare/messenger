@@ -8,7 +8,8 @@ type MobileItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLBu
 const MobileItem: React.FC<MobileItemProps> = ({
   children,
   asChild,
-  className
+  className,
+  ...props
 }) => {
 
   const Comp = asChild ? Slot : "button";
@@ -16,9 +17,10 @@ const MobileItem: React.FC<MobileItemProps> = ({
   return (
     <Comp
       className={cn(
-        "group flex gap-x-3 text-sm leading-6 font-semibold w-full justify-center p-4 text-gray-500 hover:text-black hover:bg-gray-100 [&>svg]:size-6",
+        "group flex gap-x-3 text-sm items-center leading-6 font-semibold w-full justify-center h-[60px] text-gray-500 hover:text-black hover:bg-gray-100 [&>svg]:size-6",
         className
       )}
+      {...props}
     >
       {children}
     </Comp>

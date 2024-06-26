@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
 import { db } from "@/drizzle";
+import { cache } from "react";
 
-const getCurrentUser = async () => {
+const getCurrentUser = cache(async () => {
   try {
     const session = await auth();
 
@@ -23,6 +24,6 @@ const getCurrentUser = async () => {
   } catch (error: any) {
     return null;
   }
-};
+});
 
 export default getCurrentUser;

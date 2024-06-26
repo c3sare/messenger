@@ -24,7 +24,7 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
 
   useEffect(() => {
     if (conversationId) {
-      pusherClient.subscribe(conversationId.toString());
+      pusherClient.subscribe(`conversation-${conversationId.toString()}`);
       bottomRef?.current?.scrollIntoView();
 
       const messageHandler = (message: FullMessageType) => {

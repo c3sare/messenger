@@ -1,9 +1,12 @@
+"use client";
+
+import { createConversation } from "@/actions/mutations/createConversation";
 import Avatar from "@/components/Avatar";
 import LoadingModal from "@/components/LoadingModal";
 import { users } from "@/drizzle/schema";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
 type UserBoxProps = {
   data: (typeof users.$inferSelect);
@@ -11,24 +14,23 @@ type UserBoxProps = {
 
 const UserBox: React.FC<UserBoxProps> = ({ data }) => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  const handleClick = useCallback(() => {
-    setIsLoading(true);
+  const handleClick = () => startTransition(async () => {
+    const request = await createConversation({
+      userId: data.id,
+    });
 
-    axios
-      .post("/api/conversations", {
-        userId: data.id,
-      })
-      .then((data) => {
-        router.push(`/conversations/${data.data.id}`);
-      })
-      .finally(() => setIsLoading(false));
-  }, [data, router]);
+    if (request?.data?.id) {
+      router.push(`/conversations/${request.data.id}`);
+    } else {
+      toast.error("Something went wrong!");
+    }
+  });
 
   return (
     <>
-      {isLoading && <LoadingModal />}
+      {isPending && <LoadingModal />}
       <div
         className="w-full relative my-2 flex items-center space-x-3 bg-white p-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer"
         onClick={handleClick}

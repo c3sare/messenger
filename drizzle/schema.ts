@@ -83,6 +83,7 @@ export const conversationUser = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    isOwner: boolean("is_owner"),
     joinedAt: timestamp("joined_at", { mode: "date" }).notNull().defaultNow(),
   },
   (t) => ({
