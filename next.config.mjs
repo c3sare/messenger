@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    staleTimes: {
+      dynamic: 0,
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -15,9 +20,6 @@ const nextConfig = {
         hostname: "res.cloudinary.com",
       },
     ],
-  },
-  experimental: {
-    ppr: "incremental",
   },
 };
 

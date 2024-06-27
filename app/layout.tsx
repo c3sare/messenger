@@ -11,8 +11,6 @@ export const metadata: Metadata = {
   description: "Messenger Clone",
 };
 
-export const experimental_ppr = true;
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -20,12 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          "font-inter antialiased",
-          inter.variable
-        )}
-      >
+      <body className={cn("font-inter antialiased", inter.variable)}>
         {children}
         <Toaster position="top-center" />
       </body>
