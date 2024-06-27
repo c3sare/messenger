@@ -23,7 +23,7 @@ export default function Home({ searchParams: { variant } }: Props) {
           alt="Logo"
           height={48}
           width={48}
-          className="mx-auto w-auto"
+          className="mx-auto"
           src="/images/logo.png"
           quality={100}
         />
