@@ -13,8 +13,6 @@ export const metadata: Metadata = {
 
 export const experimental_ppr = true;
 
-export const runtime = "edge";
-
 export default function RootLayout({
   children,
 }: Readonly<{
