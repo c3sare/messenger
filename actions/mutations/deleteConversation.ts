@@ -2,9 +2,11 @@
 
 import { db } from "@/drizzle";
 import { conversation } from "@/drizzle/schema";
+import { pusherServer } from "@/lib/pusher";
 import { authAction } from "@/lib/safe-action";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export const deleteConversation = authAction.schema(z.number()).action(
@@ -27,11 +29,20 @@ export const deleteConversation = authAction.schema(z.number()).action(
       (!conversationdb?.isGroup &&
         conversationdb?.users.some((user) => user.userId === userId))
     ) {
-      await db.delete(conversation).where(eq(conversation.id, conversationId));
+      const deletedConversation = await db
+        .delete(conversation)
+        .where(eq(conversation.id, conversationId))
+        .returning();
 
-      revalidatePath("/conversations", "layout");
+      pusherServer.trigger(
+        conversationdb.users.map((item) => item.userId),
+        "conversation:remove",
+        deletedConversation.at(0)
+      );
 
-      return conversationdb;
+      revalidatePath("/conversations");
+
+      return redirect("/conversations");
     } else {
       throw new Error("You don't have permission to delete this conversation");
     }

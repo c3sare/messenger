@@ -1,15 +1,15 @@
 "use client";
 
 import { FormInput } from "@/components/form/FormInput";
-import FormSelect from "@/components/form/FormSelect";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { users } from "@/drizzle/schema";
 import { useZodForm } from "@/hooks/useZodForm";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
+import { FormMultiSelect } from "@/components/form/FormMultiSelect";
+import { createConversation } from "@/actions/mutations/createConversation";
 
 type GroupChatModalProps = {
   users: (typeof users.$inferSelect)[];
@@ -23,7 +23,7 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
   const form = useZodForm({
     schema: z.object({
       name: z.string().min(3),
-      members: z.array(z.string()),
+      members: z.array(z.string()).min(1),
     }),
     defaultValues: {
       name: "",
@@ -31,20 +31,8 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
     },
   });
 
-  const members = form.watch("members");
-
   const onSubmit = form.handleSubmit(async (data) => {
-    await axios
-      .post(`/api/conversations`, {
-        ...data,
-        isGroup: true,
-      })
-      .then(() => {
-        router.refresh();
-      })
-      .catch(() => {
-        toast.error("Something went wrong");
-      })
+    await createConversation(data);
   });
 
   return (
@@ -65,19 +53,16 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({
                 name="name"
                 disabled={form.isLoading}
               />
-              {/* <FormSelect
-                disabled={form.isLoading}
-                name="members"
+              <FormMultiSelect
+                control={form.control}
                 label="Members"
+                name="members"
                 options={users.map((user) => ({
                   value: user.id,
                   label: user.name ?? "Empty",
                 }))}
-                onChange={(value) =>
-                  form.setValue("members", value, { shouldValidate: true })
-                }
-                value={members}
-              /> */}
+                disabled={form.isLoading}
+              />
             </div>
           </div>
         </div>

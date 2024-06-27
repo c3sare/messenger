@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { db } from "@/drizzle";
+import { signOut } from "next-auth/react";
 import { cache } from "react";
 
 const getCurrentUser = cache(async () => {
@@ -17,6 +18,8 @@ const getCurrentUser = cache(async () => {
     });
 
     if (!currentUser) {
+      await signOut();
+
       return null;
     }
 

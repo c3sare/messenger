@@ -5,29 +5,30 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import ConversationBox from "./ConversationBox";
-import { useSession } from "next-auth/react";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
 import getConversations from "@/actions/getConversations";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 type Conversation = Awaited<ReturnType<typeof getConversations>>[number];
 
 type ConversationListProps = {
   initialItems: Conversation[];
+  currentUser: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 };
 
 const ConversationList: React.FC<ConversationListProps> = ({
   initialItems,
+  currentUser
 }) => {
-  const session = useSession();
   const [items, setItems] = useState(initialItems);
   const router = useRouter();
 
   const { conversationId } = useConversation();
 
   const pusherKey = useMemo(() => {
-    return session.data?.user?.id;
-  }, [session.data?.user?.id]);
+    return currentUser.id;
+  }, [currentUser.id]);
 
   useEffect(() => {
     if (!pusherKey) {
@@ -52,6 +53,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
           if (currentConversation.id === conversation.id) {
             return {
               ...currentConversation,
+              lastMessageAt: conversation.lastMessageAt,
               messages: conversation.messages,
             };
           }
@@ -82,11 +84,18 @@ const ConversationList: React.FC<ConversationListProps> = ({
       pusherClient.unbind("conversation:remove", removeHandler);
     };
   }, [conversationId, pusherKey, router]);
-  return items.map((item) => (
+  return items.sort((a, b) => {
+    if ((a.lastMessageAt ?? new Date()) > (b.lastMessageAt ?? new Date()))
+      return -1;
+    else if ((a.lastMessageAt ?? new Date()) < (b.lastMessageAt ?? new Date()))
+      return 1;
+    return 0;
+  }).map((item) => (
     <ConversationBox
       key={item.id}
       data={item}
       selected={conversationId === item.id}
+      currentUser={currentUser}
     />
   ));
 };

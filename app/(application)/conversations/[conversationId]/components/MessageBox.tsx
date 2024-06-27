@@ -1,22 +1,22 @@
 import Avatar from "@/components/Avatar";
 import { FullMessageType } from "@/types";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import ImageModal from "./ImageModal";
 import { cn } from "@/lib/utils";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 type MessageBoxProps = {
   isLast?: boolean;
   data: FullMessageType;
+  currentUser: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 };
 
-const MessageBox: React.FC<MessageBoxProps> = ({ isLast, data }) => {
-  const session = useSession();
+const MessageBox: React.FC<MessageBoxProps> = ({ isLast, data, currentUser }) => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
-  const isOwn = session?.data?.user?.email === data?.sender?.email;
+  const isOwn = currentUser.id === data?.sender?.id;
   const seenList = (data.seen || [])
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)

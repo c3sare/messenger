@@ -6,8 +6,7 @@ export const createUserSchema = z
   })
   .or(
     z.object({
-      isGroup: z.literal(true),
-      members: z.array(z.object({ value: z.string() })),
+      members: z.array(z.string()).min(1),
       name: z.string().optional(),
     })
   );

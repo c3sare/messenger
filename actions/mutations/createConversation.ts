@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 export const createConversation = authAction
   .schema(createUserSchema)
   .action(async ({ parsedInput, ctx: { user: currentUser } }) => {
-    if ("isGroup" in parsedInput) {
+    if ("members" in parsedInput) {
       const { members, name } = parsedInput;
 
       const newConversation = (
@@ -29,9 +29,9 @@ export const createConversation = authAction
       const conversationUsers = await db
         .insert(conversationUser)
         .values([
-          ...members.map((member: { value: string }) => ({
-            userId: member.value,
-            isOwner: member.value === currentUser.id,
+          ...[...members, currentUser.id!].map((userId) => ({
+            userId,
+            isOwner: userId === currentUser.id,
             conversationId: newConversation.id,
           })),
         ])
@@ -95,10 +95,24 @@ export const createConversation = authAction
       ])
       .returning();
 
+    const createdConversation = await db.query.conversation.findFirst({
+      where: (conversation, { eq }) => eq(conversation.id, newConversation.id),
+      with: {
+        users: {
+          with: {
+            user: true,
+          },
+        },
+      },
+    });
+
     pusherServer.trigger(
       users.map((user) => user.userId),
       "conversation:new",
-      newConversation
+      {
+        ...createdConversation,
+        users: createdConversation?.users.map(({ user }) => user),
+      }
     );
 
     revalidatePath("/conversations", "layout");

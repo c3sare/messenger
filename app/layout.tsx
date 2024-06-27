@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
-import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -11,6 +10,8 @@ export const metadata: Metadata = {
   title: "Messenger Clone",
   description: "Messenger Clone",
 };
+
+export const experimental_ppr = true;
 
 export default function RootLayout({
   children,
@@ -25,9 +26,7 @@ export default function RootLayout({
           inter.variable
         )}
       >
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        {children}
         <Toaster position="top-center" />
       </body>
     </html>

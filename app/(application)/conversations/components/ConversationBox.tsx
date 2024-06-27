@@ -1,25 +1,25 @@
 import { useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
-import { FullConversationType } from "@/types";
 import useOtherUser from "@/hooks/useOtherUser";
 import Avatar from "@/components/Avatar";
 import AvatarGroup from "@/components/AvatarGroup";
 import { cn } from "@/lib/utils";
 import getConversations from "@/actions/getConversations";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 type ConversationBoxProps = {
   data: Awaited<ReturnType<typeof getConversations>>[number];
   selected: boolean;
+  currentUser: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 };
 
 const ConversationBox: React.FC<ConversationBoxProps> = ({
   data,
   selected,
+  currentUser
 }) => {
-  const otherUser = useOtherUser(data);
-  const session = useSession();
+  const otherUser = useOtherUser(data, currentUser);
   const router = useRouter();
 
   const handleClick = useCallback(() => {
@@ -32,9 +32,9 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
     return messages[messages.length - 1];
   }, [data.messages]);
 
-  const userEmail = useMemo(() => {
-    return session.data?.user?.email;
-  }, [session.data?.user?.email]);
+  const userId = useMemo(() => {
+    return currentUser.id;
+  }, [currentUser.id]);
 
   const hasSeen = useMemo(() => {
     if (!lastMessage) {
@@ -43,12 +43,15 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
 
     const seenArray = lastMessage.seen || [];
 
-    if (!userEmail) {
+    if (!userId) {
       return false;
     }
 
-    return seenArray.filter((user) => user.email === userEmail).length !== 0;
-  }, [lastMessage, userEmail]);
+    if (lastMessage.senderId === userId)
+      return true;
+
+    return seenArray.filter((user) => user.id === userId).length !== 0;
+  }, [lastMessage, userId]);
 
   const lastMessageText = useMemo(() => {
     if (lastMessage?.image) {
@@ -65,8 +68,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   return (
     <div
       onClick={handleClick}
-      className={cn("w-full relative my-2 flex items-center space-x-3 hover:bg-neutral-100 rounded-lg transition cursor-pointer p-3",
-        selected ? "bg-neutral-100" : "bg-white"
+      className={cn("w-full relative my-2 flex items-center space-x-3 hover:bg-neutral-200 rounded-lg transition cursor-pointer p-3",
+        selected ? "bg-neutral-200" : "bg-white"
       )}
     >
       {data.isGroup ? (
@@ -81,17 +84,18 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
               {data.name || otherUser.name}
             </p>
             {lastMessage?.createdAt && (
-              <p className="text-xs text-gray-400 font-light">
+              <p className="text-xs text-gray-500 font-light">
                 {format(new Date(lastMessage.createdAt), "p")}
               </p>
             )}
           </div>
           <p
             className={cn(
-              `truncate text-sm `,
-              hasSeen ? "text-gray-500" : "text-black font-medium"
+              `truncate text-xs`,
+              hasSeen ? "text-gray-600" : "text-black"
             )}
           >
+            {lastMessage?.senderId === userId && <b>You: </b>}
             {lastMessageText}
           </p>
         </div>

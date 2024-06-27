@@ -4,31 +4,36 @@ import useConversation from "@/hooks/useConversation";
 import type { FullMessageType } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import MessageBox from "./MessageBox";
-import axios from "axios";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 type BodyProps = {
   initialMessages: FullMessageType[];
+  currentUser: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 };
 
-const Body: React.FC<BodyProps> = ({ initialMessages }) => {
+const Body: React.FC<BodyProps> = ({ initialMessages, currentUser }) => {
   const [messages, setMessages] = useState(initialMessages);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const { conversationId } = useConversation();
 
   useEffect(() => {
-    axios.post(`/api/conversations/${conversationId}/seen`);
+    if (scrollAreaRef.current)
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+  }, [messages.length])
+
+  useEffect(() => {
+    fetch(`/api/conversations/${conversationId}/seen`, { method: "POST" });
   }, [conversationId]);
 
   useEffect(() => {
     if (conversationId) {
       pusherClient.subscribe(`conversation-${conversationId.toString()}`);
-      bottomRef?.current?.scrollIntoView();
 
       const messageHandler = (message: FullMessageType) => {
-        axios.post(`/api/conversations/${conversationId}/seen`);
+        fetch(`/api/conversations/${conversationId}/seen`, { method: "POST" });
 
         setMessages((current) => {
           if (find(current, { id: message.id })) {
@@ -37,7 +42,6 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
 
           return [...current, message];
         });
-        bottomRef?.current?.scrollIntoView();
       };
 
       const updateMessageHandler = (newMessage: FullMessageType) => {
@@ -66,15 +70,15 @@ const Body: React.FC<BodyProps> = ({ initialMessages }) => {
   }, [conversationId]);
 
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto" ref={scrollAreaRef}>
       {messages.map((message, i) => (
         <MessageBox
           isLast={i === messages.length - 1}
           key={message.id}
           data={message}
+          currentUser={currentUser}
         />
       ))}
-      <div ref={bottomRef} className="pt-24"></div>
     </div>
   );
 };

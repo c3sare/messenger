@@ -7,18 +7,19 @@ import { useMemo } from "react";
 import ProfileDrawer from "./ProfileDrawer";
 import AvatarGroup from "@/components/AvatarGroup";
 import useActiveList from "@/hooks/useActiveList";
-import { ChevronLeftIcon, EllipsisIcon } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
 import { FullConversationType } from "@/types";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 type HeaderProps = {
   conversation: FullConversationType;
+  currentUser: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 };
 
-const Header: React.FC<HeaderProps> = ({ conversation }) => {
-  const otherUser = useOtherUser(conversation);
+const Header: React.FC<HeaderProps> = ({ conversation, currentUser }) => {
+  const otherUser = useOtherUser(conversation, currentUser);
   const { members } = useActiveList();
-  const isActive = members.indexOf(otherUser?.email!) !== -1;
+  const isActive = members.indexOf(otherUser?.id!) !== -1;
 
   const statusText = useMemo(() => {
     if (conversation.isGroup) {
@@ -49,17 +50,10 @@ const Header: React.FC<HeaderProps> = ({ conversation }) => {
           </div>
         </div>
       </div>
-      <Dialog>
-        <DialogTrigger>
-          <EllipsisIcon
-            size={32}
-            className="text-sky-500 cursor-pointer hover:text-sky-600 transition"
-          />
-        </DialogTrigger>
-        <ProfileDrawer
-          data={conversation}
-        />
-      </Dialog>
+      <ProfileDrawer
+        data={conversation}
+        currentUser={currentUser}
+      />
     </div>
   );
 };

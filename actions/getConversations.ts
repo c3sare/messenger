@@ -19,6 +19,8 @@ const getConversations = async () => {
             conversation: {
               with: {
                 messages: {
+                  limit: 1,
+                  orderBy: (message, { desc }) => desc(message.createdAt),
                   with: {
                     sender: true,
                     seenBy: {

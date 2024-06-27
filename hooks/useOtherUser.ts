@@ -1,24 +1,25 @@
-import { useSession } from "next-auth/react";
 import { useMemo } from "react";
 import { FullConversationType } from "@/types";
 import getConversations from "@/actions/getConversations";
+import getCurrentUser from "@/actions/getCurrentUser";
 
 type Props =
   | Awaited<ReturnType<typeof getConversations>>[number]
   | FullConversationType;
 
-const useOtherUser = (conversation: Props) => {
-  const session = useSession();
-
+const useOtherUser = (
+  conversation: Props,
+  currentUser: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
+) => {
   const otherUser = useMemo(() => {
-    const currentUserEmail = session?.data?.user?.email;
+    const currentUserEmail = currentUser.email;
 
     const otherUser = conversation.users?.filter(
       (user) => user.email !== currentUserEmail
     );
 
     return otherUser;
-  }, [session?.data?.user?.email, conversation.users]);
+  }, [currentUser.email, conversation.users]);
 
   return otherUser?.[0] ?? null;
 };

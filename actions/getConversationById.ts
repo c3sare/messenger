@@ -22,6 +22,7 @@ const getConversationById = async (conversationId: number) => {
           },
         },
         messages: {
+          orderBy: (message, { asc }) => asc(message.createdAt),
           with: {
             sender: true,
             seenBy: {
