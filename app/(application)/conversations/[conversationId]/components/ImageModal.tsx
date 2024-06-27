@@ -15,9 +15,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, onClose, src }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
-        <div className="size-80">
-          <Image alt="Image" className="object-cover" fill src={src} />
-        </div>
+        <Image alt="Image" className="object-cover" width={1000} height={1000} src={src} />
       </DialogContent>
     </Dialog>
   );
