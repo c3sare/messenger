@@ -40,7 +40,7 @@ const MessageForm = () => {
       <CldUploadButton
         options={{ maxFiles: 1 }}
         onUpload={handleUpload}
-        uploadPreset="qv6lkdst"
+        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       >
         <CameraIcon size={30} className="text-sky-500" />
       </CldUploadButton>
