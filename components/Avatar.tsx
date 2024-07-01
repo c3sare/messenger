@@ -14,7 +14,7 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
   const isActive = members.indexOf(user?.id!) !== -1;
 
   return (
-    <div className="relative">
+    <div className="relative size-9 lg:size-11">
       <div
         className="relative inline-block rounded-full overflow-hidden size-9 md:size-11"
       >

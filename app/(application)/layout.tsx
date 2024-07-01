@@ -58,7 +58,7 @@ const ApplicationLayout = ({ children }: React.PropsWithChildren) => {
                 </div>
                 <form className="fixed flex items-center justify-center w-full bottom-0 z-40 bg-white h-[60px] border-t-[1px] lg:hidden">
                     <div className="h-full flex items-center justify-center w-20">
-                        <Suspense fallback={<Skeleton className="size-11 rounded-full bg-neutral-200" />}>
+                        <Suspense fallback={<Skeleton className="size-9 lg:size-11 rounded-full bg-neutral-200" />}>
                             <UserForm />
                         </Suspense>
                     </div>
