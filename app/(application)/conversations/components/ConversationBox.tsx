@@ -66,11 +66,13 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   }, [lastMessage]);
 
   return (
-    <div
+    <button
       onClick={handleClick}
-      className={cn("w-full relative my-2 flex items-center space-x-3 hover:bg-neutral-200 rounded-lg transition cursor-pointer p-3",
+      className={cn("w-full relative my-2 flex items-center space-x-3 hover:bg-neutral-200 rounded-lg transition p-3",
         selected ? "bg-neutral-200" : "bg-white"
       )}
+      disabled={selected}
+      aria-label={`Start a conversation with ${data.name}`}
     >
       {data.isGroup ? (
         <AvatarGroup users={data.users} />
@@ -91,7 +93,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
           </div>
           <p
             className={cn(
-              `truncate text-xs`,
+              `truncate text-xs text-left`,
               hasSeen ? "text-gray-600" : "text-black"
             )}
           >
@@ -100,7 +102,7 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
           </p>
         </div>
       </div>
-    </div>
+    </button>
   );
 };
 

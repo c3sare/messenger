@@ -56,18 +56,25 @@ const ApplicationLayout = ({ children }: React.PropsWithChildren) => {
                         </Suspense>
                     </nav>
                 </div>
-                <form className="fixed justify-between w-full bottom-0 z-40 flex items-center bg-white h-[60px] border-t-[1px] lg:hidden">
-                    {routes.map((route) => (
-                        <MobileLinkItem
-                            key={route.href}
-                            href={route.href}
-                        >
-                            {route.icon}
-                        </MobileLinkItem>
-                    ))}
-                    <MobileItem formAction={logout}>
-                        <LogOutIcon />
-                    </MobileItem>
+                <form className="fixed flex items-center justify-center w-full bottom-0 z-40 bg-white h-[60px] border-t-[1px] lg:hidden">
+                    <div className="h-full flex items-center justify-center w-20">
+                        <Suspense fallback={<Skeleton className="size-11 rounded-full bg-neutral-200" />}>
+                            <UserForm />
+                        </Suspense>
+                    </div>
+                    <div className="w-full justify-between flex items-center h-full">
+                        {routes.map((route) => (
+                            <MobileLinkItem
+                                key={route.href}
+                                href={route.href}
+                            >
+                                {route.icon}
+                            </MobileLinkItem>
+                        ))}
+                        <MobileItem formAction={logout}>
+                            <LogOutIcon />
+                        </MobileItem>
+                    </div>
                 </form>
                 <main className="lg:pl-20 h-full">{children}</main>
             </div>
