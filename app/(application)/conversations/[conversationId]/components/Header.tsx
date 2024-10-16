@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import ProfileDrawer from "./ProfileDrawer";
 import AvatarGroup from "@/components/AvatarGroup";
-import useActiveList from "@/hooks/useActiveList";
+import useActiveList from "@/stores/useActiveList";
 import { ChevronLeftIcon } from "lucide-react";
 import { FullConversationType } from "@/types";
 import getCurrentUser from "@/actions/getCurrentUser";
@@ -18,7 +18,7 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ conversation, currentUser }) => {
   const otherUser = useOtherUser(conversation, currentUser);
-  const { members } = useActiveList();
+  const members = useActiveList((state) => state.members);
   const isActive = members.indexOf(otherUser?.id!) !== -1;
 
   const statusText = useMemo(() => {
@@ -50,10 +50,7 @@ const Header: React.FC<HeaderProps> = ({ conversation, currentUser }) => {
           </div>
         </div>
       </div>
-      <ProfileDrawer
-        data={conversation}
-        currentUser={currentUser}
-      />
+      <ProfileDrawer data={conversation} currentUser={currentUser} />
     </div>
   );
 };
