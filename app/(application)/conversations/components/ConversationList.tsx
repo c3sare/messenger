@@ -6,7 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import ConversationBox from "./ConversationBox";
 import { pusherClient } from "@/lib/pusher";
-import { find } from "lodash";
 import getConversations from "@/actions/getConversations";
 import getCurrentUser from "@/actions/getCurrentUser";
 
@@ -19,7 +18,7 @@ type ConversationListProps = {
 
 const ConversationList: React.FC<ConversationListProps> = ({
   initialItems,
-  currentUser
+  currentUser,
 }) => {
   const [items, setItems] = useState(initialItems);
   const router = useRouter();
@@ -39,7 +38,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
     const newHandler = (conversation: Conversation) => {
       setItems((current) => {
-        if (find(current, { id: conversation.id })) {
+        if (current.find((item) => item.id === conversation.id)) {
           return current;
         }
 
@@ -84,20 +83,24 @@ const ConversationList: React.FC<ConversationListProps> = ({
       pusherClient.unbind("conversation:remove", removeHandler);
     };
   }, [conversationId, pusherKey, router]);
-  return items.sort((a, b) => {
-    if ((a.lastMessageAt ?? new Date()) > (b.lastMessageAt ?? new Date()))
-      return -1;
-    else if ((a.lastMessageAt ?? new Date()) < (b.lastMessageAt ?? new Date()))
-      return 1;
-    return 0;
-  }).map((item) => (
-    <ConversationBox
-      key={item.id}
-      data={item}
-      selected={conversationId === item.id}
-      currentUser={currentUser}
-    />
-  ));
+  return items
+    .sort((a, b) => {
+      if ((a.lastMessageAt ?? new Date()) > (b.lastMessageAt ?? new Date()))
+        return -1;
+      else if (
+        (a.lastMessageAt ?? new Date()) < (b.lastMessageAt ?? new Date())
+      )
+        return 1;
+      return 0;
+    })
+    .map((item) => (
+      <ConversationBox
+        key={item.id}
+        data={item}
+        selected={conversationId === item.id}
+        currentUser={currentUser}
+      />
+    ));
 };
 
 export default ConversationList;

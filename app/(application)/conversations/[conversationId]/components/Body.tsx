@@ -5,7 +5,6 @@ import type { FullMessageType } from "@/types";
 import { useEffect, useRef, useState } from "react";
 import MessageBox from "./MessageBox";
 import { pusherClient } from "@/lib/pusher";
-import { find } from "lodash";
 import getCurrentUser from "@/actions/getCurrentUser";
 
 type BodyProps = {
@@ -22,7 +21,7 @@ const Body: React.FC<BodyProps> = ({ initialMessages, currentUser }) => {
   useEffect(() => {
     if (scrollAreaRef.current)
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-  }, [messages.length])
+  }, [messages.length]);
 
   useEffect(() => {
     fetch(`/api/conversations/${conversationId}/seen`, { method: "POST" });
@@ -36,7 +35,7 @@ const Body: React.FC<BodyProps> = ({ initialMessages, currentUser }) => {
         fetch(`/api/conversations/${conversationId}/seen`, { method: "POST" });
 
         setMessages((current) => {
-          if (find(current, { id: message.id })) {
+          if (current.find((item) => item.id === message.id)) {
             return current;
           }
 
