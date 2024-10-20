@@ -22,6 +22,7 @@ import {
 import { deleteConversation } from "@/actions/mutations/deleteConversation";
 import getCurrentUser from "@/actions/getCurrentUser";
 import { useShallow } from "zustand/shallow";
+import { Button } from "@/components/ui/button";
 
 type ProfileDrawerProps = {
   data: FullConversationType;
@@ -72,14 +73,15 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ data, currentUser }) => {
           <div className="flex gap-10 my-8">
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button className="flex flex-col gap-1 items-center cursor-pointer hover:opacity-75">
-                  <div className="w-10 h-10 bg-neutral-200 rounded-full flex items-center justify-center">
-                    <TrashIcon size={24} />
+                <Button
+                  variant="ghost"
+                  className="flex flex-col gap-1 items-center h-auto"
+                >
+                  <div className="w-10 h-10 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center">
+                    <TrashIcon className="size-4" />
                   </div>
-                  <div className="text-sm font-light text-neutral-600">
-                    Delete
-                  </div>
-                </button>
+                  <span className="text-destructive">Delete</span>
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -95,6 +97,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ data, currentUser }) => {
                   </AlertDialogCancel>
                   <AlertDialogAction
                     disabled={isPending}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/80"
                     onClick={(e) =>
                       startTransition(async () => {
                         e.preventDefault();
@@ -103,7 +106,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ data, currentUser }) => {
                       })
                     }
                   >
-                    Confirm
+                    Delete this conversation
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

@@ -17,7 +17,7 @@ export default function Home({ searchParams: { variant } }: Props) {
   const isVisibleRegister = variant === "REGISTER";
 
   return (
-    <div className="flex min-h-screen flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <Image
           alt="Logo"
@@ -32,7 +32,7 @@ export default function Home({ searchParams: { variant } }: Props) {
         </h2>
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
+        <div className="bg-white px-4 py-8 shadow rounded-lg sm:px-10">
           {isVisibleRegister ? <RegisterForm /> : <LoginForm />}
           <div className="mt-6">
             <div className="relative">
@@ -70,7 +70,7 @@ export default function Home({ searchParams: { variant } }: Props) {
               </Button>
             </form>
           </div>
-          <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
+          <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500 flex-col sm:flex-row items-center">
             <div>
               {isVisibleRegister
                 ? "Already have an account?"

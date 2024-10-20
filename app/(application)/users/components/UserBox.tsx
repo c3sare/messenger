@@ -8,24 +8,25 @@ import { useTransition } from "react";
 import { toast } from "sonner";
 
 type UserBoxProps = {
-  data: (typeof users.$inferSelect);
+  data: typeof users.$inferSelect;
 };
 
 const UserBox: React.FC<UserBoxProps> = ({ data }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const handleClick = () => startTransition(async () => {
-    const request = await createConversation({
-      userId: data.id,
-    });
+  const handleClick = () =>
+    startTransition(async () => {
+      const request = await createConversation({
+        userId: data.id,
+      });
 
-    if (request?.data?.id) {
-      router.push(`/conversations/${request.data.id}`);
-    } else {
-      toast.error("Something went wrong!");
-    }
-  });
+      if (request?.data?.id) {
+        router.push(`/conversations/${request.data.id}`);
+      } else {
+        toast.error("Something went wrong!");
+      }
+    });
 
   return (
     <button
@@ -35,9 +36,7 @@ const UserBox: React.FC<UserBoxProps> = ({ data }) => {
       disabled={isPending}
     >
       <Avatar user={data} />
-      <div
-        className="min-w-0 flex-1"
-      >
+      <div className="min-w-0 flex-1">
         <div className="focus:outline-none">
           <div className="flex justify-between items-center mb-1">
             <p className="text-sm font-medium text-gray-900">{data.name}</p>
