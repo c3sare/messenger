@@ -9,8 +9,12 @@ interface IParams {
   conversationId: string;
 }
 
-const ConversationId = async ({ params }: { params: IParams }) => {
-  const [currentUser, conversation] = await Promise.all([getCurrentUser(), getConversationById(parseInt(params.conversationId))]);
+const ConversationId = async ({ params }: { params: Promise<IParams> }) => {
+  const { conversationId } = await params;
+  const [currentUser, conversation] = await Promise.all([
+    getCurrentUser(),
+    getConversationById(parseInt(conversationId)),
+  ]);
 
   if (!conversation) {
     return (
@@ -26,7 +30,10 @@ const ConversationId = async ({ params }: { params: IParams }) => {
     <div className="lg:pl-80 h-full">
       <div className="h-full flex flex-col">
         <Header conversation={conversation} currentUser={currentUser!} />
-        <Body initialMessages={conversation.messages} currentUser={currentUser!} />
+        <Body
+          initialMessages={conversation.messages}
+          currentUser={currentUser!}
+        />
         <Form />
       </div>
     </div>

@@ -8,12 +8,13 @@ import { GithubIcon } from "@/components/icons/github-icon";
 import { signIn } from "@/auth";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     variant?: string;
-  };
+  }>;
 };
 
-export default function Home({ searchParams: { variant } }: Props) {
+export default async function Home({ searchParams }: Props) {
+  const { variant } = await searchParams;
   const isVisibleRegister = variant === "REGISTER";
 
   return (

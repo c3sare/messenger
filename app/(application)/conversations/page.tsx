@@ -2,13 +2,13 @@ import EmptyState from "@/components/EmptyState";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  params: {
+  params: Promise<{
     conversationId?: string;
-  };
+  }>;
 };
 
-const Home = ({ params: { conversationId } }: Props) => {
-  const isOpen = !!conversationId;
+const Home = async ({ params }: Props) => {
+  const isOpen = !!(await params).conversationId;
 
   return (
     <div
