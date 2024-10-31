@@ -47,11 +47,11 @@ export const accounts = pgTable(
     id_token: text("id_token"),
     session_state: text("session_state"),
   },
-  (account) => ({
-    compoundKey: primaryKey({
+  (account) => [
+    primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-  })
+  ]
 );
 
 export const sessions = pgTable("session", {
@@ -69,9 +69,7 @@ export const verificationTokens = pgTable(
     token: text("token").notNull(),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  })
+  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })]
 );
 
 export const conversationUser = pgTable(
@@ -86,9 +84,7 @@ export const conversationUser = pgTable(
     isOwner: boolean("is_owner"),
     joinedAt: timestamp("joined_at", { mode: "date" }).notNull().defaultNow(),
   },
-  (t) => ({
-    primaryKey: primaryKey({ columns: [t.conversationId, t.userId] }),
-  })
+  (t) => [primaryKey({ columns: [t.conversationId, t.userId] })]
 );
 
 export const conversationUserRelations = relations(
@@ -150,9 +146,7 @@ export const messageRead = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
   },
-  (t) => ({
-    primaryKey: primaryKey({ columns: [t.messageId, t.userId] }),
-  })
+  (t) => [primaryKey({ columns: [t.messageId, t.userId] })]
 );
 
 export const messageReadRelations = relations(messageRead, ({ one }) => ({
