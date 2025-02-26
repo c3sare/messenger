@@ -1,7 +1,6 @@
 "use client";
 
 import { users } from "@/drizzle/schema";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CldUploadButton } from "next-cloudinary";
 import { toast } from "sonner";
@@ -16,9 +15,7 @@ type SettingsModalProps = {
   currentUser: typeof users.$inferSelect;
 };
 
-const SettingsModal: React.FC<SettingsModalProps> = ({
-  currentUser,
-}) => {
+const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser }) => {
   const form = useZodForm({
     schema: z.object({
       name: z.string().min(3).max(30),
@@ -31,12 +28,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
   });
 
   const image = form.watch("image");
-
-  const handleUpload = (result: any) => {
-    form.setValue("image", result?.info?.secure_url, {
-      shouldValidate: true,
-    });
-  };
 
   const onSubmit = form.handleSubmit(async (data) => {
     const request = await updateSettings(data);
@@ -68,17 +59,29 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   width={48}
                   height={48}
                   className="rounded-full"
-                  src={
-                    image || currentUser?.image || "/images/placeholder.jpg"
-                  }
+                  src={image || currentUser?.image || "/images/placeholder.jpg"}
                   alt="Avatar"
                 />
                 <CldUploadButton
                   options={{ maxFiles: 1 }}
-                  onUpload={handleUpload}
-                  uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                  onSuccess={(result) => {
+                    const info = result?.info;
+                    if (typeof info === "undefined" || typeof info === "string")
+                      return;
+
+                    form.setValue("image", info.secure_url, {
+                      shouldValidate: true,
+                    });
+                  }}
+                  uploadPreset={
+                    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+                  }
                 >
-                  <Button disabled={form.isLoading} variant="secondary" type="button">
+                  <Button
+                    disabled={form.isLoading}
+                    variant="secondary"
+                    type="button"
+                  >
                     Change
                   </Button>
                 </CldUploadButton>

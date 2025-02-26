@@ -28,18 +28,22 @@ const MessageForm = () => {
     });
   });
 
-  const handleUpload = async (result: any) => {
-    await createMessage({
-      conversationId: conversationId!,
-      image: result?.info?.secure_url,
-    });
-  };
-
   return (
     <div className="p-4 bg-white border-t flex items-center gap-2 lg:gap-4 w-full">
       <CldUploadButton
         options={{ maxFiles: 1 }}
-        onUpload={handleUpload}
+        onSuccess={async (result) => {
+          if (
+            typeof result.info === "undefined" ||
+            typeof result.info === "string"
+          )
+            return;
+
+          await createMessage({
+            conversationId: conversationId!,
+            image: result?.info?.secure_url,
+          });
+        }}
         uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
       >
         <CameraIcon size={30} className="text-sky-500" />

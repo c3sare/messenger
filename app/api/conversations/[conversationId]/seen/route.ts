@@ -82,7 +82,7 @@ export async function POST(
     );
 
     return NextResponse.json({ ...updateMessage, seenIds });
-  } catch (error: any) {
+  } catch (error) {
     console.log(error, "ERROR_MESSAGES_SEEN");
     return new NextResponse("Internal Error", { status: 500 });
   }

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Control,
-  FieldValues,
-  Path,
-  useFormState,
-  type PathValue,
-} from "react-hook-form";
+import { Control, FieldValues, Path, type PathValue } from "react-hook-form";
 import {
   FormControl,
   FormDescription,
@@ -17,7 +11,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { InputHTMLAttributes } from "react";
-import { cn } from "@/lib/utils";
 
 type FormInput<T extends FieldValues> = {
   control: Control<T>;
@@ -46,10 +39,6 @@ export const FormInput = <T extends FieldValues>({
   defaultValue,
   onChange,
 }: FormInput<T>) => {
-  const { errors } = useFormState({ control });
-
-  const isError = !!errors[name];
-
   return (
     <FormField
       control={control}

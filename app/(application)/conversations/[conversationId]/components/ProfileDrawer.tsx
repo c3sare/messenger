@@ -33,7 +33,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({ data, currentUser }) => {
   const [isPending, startTransition] = useTransition();
   const otherUser = useOtherUser(data, currentUser);
   const members = useActiveList(useShallow((state) => state.members));
-  const isActive = members.indexOf(otherUser?.id!) !== -1;
+  const isActive = members.indexOf(otherUser.id) !== -1;
 
   const joinedDate = useMemo(() => {
     return format(new Date(otherUser.createdAt), "PP");

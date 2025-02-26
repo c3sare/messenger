@@ -19,7 +19,7 @@ type HeaderProps = {
 const Header: React.FC<HeaderProps> = ({ conversation, currentUser }) => {
   const otherUser = useOtherUser(conversation, currentUser);
   const members = useActiveList((state) => state.members);
-  const isActive = members.indexOf(otherUser?.id!) !== -1;
+  const isActive = members.indexOf(otherUser.id) !== -1;
 
   const statusText = useMemo(() => {
     if (conversation.isGroup) {

@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { users } from "@/drizzle/schema";
 import { useZodForm } from "@/hooks/useZodForm";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { z } from "zod";
 import { FormMultiSelect } from "@/components/form/FormMultiSelect";
 import { createConversation } from "@/actions/mutations/createConversation";
@@ -15,11 +13,7 @@ type GroupChatModalProps = {
   users: (typeof users.$inferSelect)[];
 };
 
-const GroupChatModal: React.FC<GroupChatModalProps> = ({
-  users,
-}) => {
-  const router = useRouter();
-
+const GroupChatModal: React.FC<GroupChatModalProps> = ({ users }) => {
   const form = useZodForm({
     schema: z.object({
       name: z.string().min(3),
