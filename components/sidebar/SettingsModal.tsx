@@ -5,22 +5,19 @@ import Image from "next/image";
 import { CldUploadButton } from "next-cloudinary";
 import { toast } from "sonner";
 import { FormInput } from "../form/FormInput";
-import { useZodForm } from "@/hooks/useZodForm";
-import { z } from "zod";
+import { useValibotForm } from "@/hooks/useValibotForm";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
 import { updateSettings } from "@/actions/mutations/updateSettings";
+import { settingSchema } from "@/validators/settingSchema";
 
 type SettingsModalProps = {
   currentUser: typeof users.$inferSelect;
 };
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser }) => {
-  const form = useZodForm({
-    schema: z.object({
-      name: z.string().min(3).max(30),
-      image: z.string().url().optional().nullable(),
-    }),
+  const form = useValibotForm({
+    schema: settingSchema,
     defaultValues: {
       name: currentUser?.name ?? "",
       image: currentUser?.image,

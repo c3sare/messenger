@@ -1,12 +1,11 @@
-import { z } from "zod";
+import * as v from "valibot";
 
-export const createUserSchema = z
-  .object({
-    userId: z.string(),
-  })
-  .or(
-    z.object({
-      members: z.array(z.string()).min(1),
-      name: z.string().optional(),
-    })
-  );
+export const createUserSchema = v.union([
+  v.object({
+    userId: v.string(),
+  }),
+  v.object({
+    members: v.pipe(v.array(v.string()), v.minLength(1)),
+    name: v.optional(v.string()),
+  }),
+]);
