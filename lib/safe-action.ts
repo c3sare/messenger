@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
 import { createSafeActionClient } from "next-safe-action";
-
-export const action = createSafeActionClient();
+import { valibotAdapter } from "next-safe-action/adapters/valibot";
+export const action = createSafeActionClient({
+  validationAdapter: valibotAdapter(),
+});
 
 export const authAction = createSafeActionClient().use(async ({ next }) => {
   const session = await auth();
