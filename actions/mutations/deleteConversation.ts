@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/drizzle";
-import { conversation } from "@/drizzle/schema";
+import { conversations } from "@/drizzle/schema";
 import { pusherServer } from "@/lib/pusher";
 import { authAction } from "@/lib/safe-action";
 import { eq } from "drizzle-orm";
@@ -16,26 +16,27 @@ export const deleteConversation = authAction.schema(v.number()).action(
       user: { id: userId },
     },
   }) => {
-    const conversationdb = await db.query.conversation.findFirst({
-      where: (conversation, { eq }) => eq(conversation.id, conversationId),
+    const conversationdb = await db.query.conversations.findFirst({
+      where: {
+        id: conversationId,
+      },
       with: {
         users: true,
       },
     });
 
     if (
-      (conversationdb?.isGroup &&
-        conversationdb.users.find((user) => user.userId === userId)?.isOwner) ||
+      (conversationdb?.isGroup && conversationdb.ownerId === userId) ||
       (!conversationdb?.isGroup &&
-        conversationdb?.users.some((user) => user.userId === userId))
+        conversationdb?.users.some((user) => user.id === userId))
     ) {
       const deletedConversation = await db
-        .delete(conversation)
-        .where(eq(conversation.id, conversationId))
+        .delete(conversations)
+        .where(eq(conversations.id, conversationId))
         .returning();
 
       pusherServer.trigger(
-        conversationdb.users.map((item) => item.userId),
+        conversationdb.users.map((item) => item.id),
         "conversation:remove",
         deletedConversation.at(0)
       );

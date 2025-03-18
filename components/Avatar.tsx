@@ -14,7 +14,7 @@ interface AvatarProps {
 const Avatar: React.FC<AvatarProps> = ({ user }) => {
   const members = useActiveList(useShallow((state) => state.members));
 
-  const isActive = members.indexOf(user?.id) !== -1;
+  const isActive = members.indexOf(user!.id) !== -1;
 
   return (
     <div className="relative size-9 lg:size-11">

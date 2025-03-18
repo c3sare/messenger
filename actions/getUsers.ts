@@ -12,12 +12,19 @@ const getUsers = async () => {
 
   try {
     const user = await db.query.users.findMany({
-      orderBy: (user, { desc }) => desc(user.createdAt),
-      where: (user, { not, eq }) => not(eq(user.id, userId)),
+      orderBy: {
+        createdAt: "desc",
+      },
+      where: {
+        NOT: {
+          id: userId,
+        },
+      },
     });
 
     return user;
-  } catch (error: any) {
+  } catch (error) {
+    console.error(error);
     return [];
   }
 };

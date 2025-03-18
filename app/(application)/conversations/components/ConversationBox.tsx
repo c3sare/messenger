@@ -17,7 +17,7 @@ type ConversationBoxProps = {
 const ConversationBox: React.FC<ConversationBoxProps> = ({
   data,
   selected,
-  currentUser
+  currentUser,
 }) => {
   const otherUser = useOtherUser(data, currentUser);
   const router = useRouter();
@@ -41,14 +41,13 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
       return false;
     }
 
-    const seenArray = lastMessage.seen || [];
+    const seenArray = lastMessage.seenBy || [];
 
     if (!userId) {
       return false;
     }
 
-    if (lastMessage.senderId === userId)
-      return true;
+    if (lastMessage.senderId === userId) return true;
 
     return seenArray.filter((user) => user.id === userId).length !== 0;
   }, [lastMessage, userId]);
@@ -68,7 +67,8 @@ const ConversationBox: React.FC<ConversationBoxProps> = ({
   return (
     <button
       onClick={handleClick}
-      className={cn("w-full relative my-2 flex items-center space-x-3 hover:bg-neutral-200 rounded-lg transition p-3",
+      className={cn(
+        "w-full relative my-2 flex items-center space-x-3 hover:bg-neutral-200 rounded-lg transition p-3",
         selected ? "bg-neutral-200" : "bg-white"
       )}
       disabled={selected}

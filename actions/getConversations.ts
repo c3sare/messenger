@@ -12,35 +12,25 @@ const getConversations = async () => {
 
   try {
     const user = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.id, userId),
+      where: {
+        id: userId,
+      },
       with: {
         conversations: {
           with: {
-            conversation: {
+            messages: {
+              limit: 1,
+              orderBy: (message, { desc }) => desc(message.createdAt),
               with: {
-                messages: {
-                  limit: 1,
-                  orderBy: (message, { desc }) => desc(message.createdAt),
-                  with: {
-                    sender: true,
-                    seenBy: {
-                      with: {
-                        user: {
-                          columns: {
-                            hashedPassword: false,
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                users: {
-                  with: {
-                    user: true,
+                sender: true,
+                seenBy: {
+                  columns: {
+                    hashedPassword: false,
                   },
                 },
               },
             },
+            users: true,
           },
         },
       },
@@ -48,20 +38,9 @@ const getConversations = async () => {
 
     if (!user) throw new Error("User not found");
 
-    return user.conversations.map((conversation) => ({
-      ...conversation.conversation,
-      users: conversation.conversation.users.map((user) => ({
-        ...user.user,
-        joinedAt: user.joinedAt,
-      })),
-      messages: conversation.conversation.messages.map(
-        ({ seenBy, ...message }) => ({
-          ...message,
-          seen: seenBy.map(({ user }) => user),
-        })
-      ),
-    }));
-  } catch (error: any) {
+    return user.conversations;
+  } catch (error) {
+    console.error(error);
     return [];
   }
 };

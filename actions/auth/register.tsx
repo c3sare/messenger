@@ -18,7 +18,9 @@ export const registerUser = action
       } as const;
     }
     const existUser = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.email, email),
+      where: {
+        email,
+      },
     });
 
     if (existUser)

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/drizzle";
-import { conversation, message, messageRead } from "@/drizzle/schema";
+import { conversations, messages, messageReads } from "@/drizzle/schema";
 import { pusherServer } from "@/lib/pusher";
 import { authAction } from "@/lib/safe-action";
 import { createMessageSchema } from "@/validators/createMessageSchema";
@@ -20,7 +20,7 @@ export const createMessage = authAction.schema(createMessageSchema).action(
 
     const newMessage = (
       await db
-        .insert(message)
+        .insert(messages)
         .values({
           body,
           image,
@@ -32,20 +32,22 @@ export const createMessage = authAction.schema(createMessageSchema).action(
 
     if (!newMessage) throw new Error("Message not created");
 
-    await db.insert(messageRead).values({
+    await db.insert(messageReads).values({
       userId,
       messageId: newMessage.id,
     });
 
     await db
-      .update(conversation)
+      .update(conversations)
       .set({
         lastMessageAt: new Date(),
       })
-      .where(eq(conversation.id, conversationId));
+      .where(eq(conversations.id, conversationId));
 
-    const updatedConversation = await db.query.conversation.findFirst({
-      where: (conversation, { eq }) => eq(conversation.id, conversationId),
+    const updatedConversation = await db.query.conversations.findFirst({
+      where: {
+        id: conversationId,
+      },
       with: {
         messages: true,
         users: true,
@@ -54,15 +56,13 @@ export const createMessage = authAction.schema(createMessageSchema).action(
 
     if (!updatedConversation) throw new Error("Conversation not found");
 
-    const updateMessage = await db.query.message.findFirst({
-      where: (message, { eq }) => eq(message.id, newMessage.id),
+    const updateMessage = await db.query.messages.findFirst({
+      where: {
+        id: newMessage.id,
+      },
       with: {
         sender: true,
-        seenBy: {
-          with: {
-            user: true,
-          },
-        },
+        seenBy: true,
       },
     });
 
@@ -72,7 +72,7 @@ export const createMessage = authAction.schema(createMessageSchema).action(
 
     const transformedMessage = {
       ...updateMessageBody,
-      seen: seenBy.map(({ user }) => user),
+      seen: seenBy,
     };
 
     await pusherServer.trigger(
@@ -84,7 +84,7 @@ export const createMessage = authAction.schema(createMessageSchema).action(
     const lastMessage = transformedMessage;
 
     updatedConversation.users.map((user) => {
-      pusherServer.trigger(user.userId, "conversation:update", {
+      pusherServer.trigger(user.id, "conversation:update", {
         id: conversationId,
         messages: [lastMessage],
       });

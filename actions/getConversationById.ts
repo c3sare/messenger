@@ -9,27 +9,21 @@ const getConversationById = async (conversationId: number) => {
       return null;
     }
 
-    const conversation = await db.query.conversation.findFirst({
-      where: (conversation, { eq }) => eq(conversation.id, conversationId),
+    const conversation = await db.query.conversations.findFirst({
+      where: {
+        id: conversationId,
+      },
       with: {
         users: {
-          with: {
-            user: {
-              columns: {
-                hashedPassword: false,
-              },
-            },
+          columns: {
+            hashedPassword: false,
           },
         },
         messages: {
           orderBy: (message, { asc }) => asc(message.createdAt),
           with: {
             sender: true,
-            seenBy: {
-              with: {
-                user: true,
-              },
-            },
+            seenBy: true,
           },
         },
       },
@@ -39,17 +33,7 @@ const getConversationById = async (conversationId: number) => {
       throw new Error("Conversation not found");
     }
 
-    return {
-      ...conversation,
-      users: conversation.users.map((user) => ({
-        ...user.user,
-        joinedAt: user.joinedAt,
-      })),
-      messages: conversation.messages.map(({ seenBy, ...message }) => ({
-        ...message,
-        seen: seenBy.map(({ user }) => user),
-      })),
-    };
+    return conversation;
   } catch (error) {
     console.error(error);
     return null;

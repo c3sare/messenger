@@ -14,7 +14,9 @@ const getCurrentUser = cache(async () => {
     }
 
     const currentUser = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.id, userId),
+      where: {
+        id: userId,
+      },
     });
 
     if (!currentUser) {
@@ -24,7 +26,8 @@ const getCurrentUser = cache(async () => {
     }
 
     return currentUser;
-  } catch (error: any) {
+  } catch (error) {
+    console.error(error);
     return null;
   }
 });

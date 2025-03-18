@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/drizzle";
-import { conversation, conversationUser } from "@/drizzle/schema";
+import { conversations, conversationUsers } from "@/drizzle/schema";
 import { pusherServer } from "@/lib/pusher";
 import { authAction } from "@/lib/safe-action";
 import { createUserSchema } from "@/validators/createUserSchema";
@@ -16,29 +16,29 @@ export const createConversation = authAction
 
       const newConversation = (
         await db
-          .insert(conversation)
+          .insert(conversations)
           .values({
             name,
             isGroup: true,
+            ownerId: currentUser.id!,
           })
           .returning()
       ).at(0);
 
       if (!newConversation) throw new Error("Failed to create conversation");
 
-      const conversationUsers = await db
-        .insert(conversationUser)
+      const users = await db
+        .insert(conversationUsers)
         .values([
           ...[...members, currentUser.id!].map((userId) => ({
             userId,
-            isOwner: userId === currentUser.id,
             conversationId: newConversation.id,
           })),
         ])
         .returning();
 
       pusherServer.trigger(
-        conversationUsers.map((user) => user.userId),
+        users.map((user) => user.userId),
         "conversation:new",
         newConversation
       );
@@ -53,20 +53,20 @@ export const createConversation = authAction
     const existingConveration = (
       await db
         .select({
-          id: conversationUser.conversationId,
-          isGroup: conversation.isGroup,
+          id: conversationUsers.conversationId,
+          isGroup: conversations.isGroup,
         })
-        .from(conversationUser)
+        .from(conversationUsers)
         .leftJoin(
-          conversation,
-          eq(conversation.id, conversationUser.conversationId)
+          conversations,
+          eq(conversations.id, conversationUsers.conversationId)
         )
-        .groupBy(conversationUser.conversationId, conversation.isGroup)
-        .having(sql`count(${conversationUser.conversationId}) > 1`)
+        .groupBy(conversationUsers.conversationId, conversations.isGroup)
+        .having(sql`count(${conversationUsers.conversationId}) > 1`)
         .where(
           and(
-            inArray(conversationUser.userId, [currentUser.id!, userId]),
-            or(eq(conversation.isGroup, false), isNull(conversation.isGroup))
+            inArray(conversationUsers.userId, [currentUser.id!, userId]),
+            or(eq(conversations.isGroup, false), isNull(conversations.isGroup))
           )
         )
     ).at(0);
@@ -76,13 +76,13 @@ export const createConversation = authAction
     }
 
     const newConversation = (
-      await db.insert(conversation).values({}).returning()
+      await db.insert(conversations).values({}).returning()
     ).at(0);
 
     if (!newConversation) throw new Error("Failed to create conversation");
 
     const users = await db
-      .insert(conversationUser)
+      .insert(conversationUsers)
       .values([
         {
           userId: currentUser.id!,
@@ -95,24 +95,19 @@ export const createConversation = authAction
       ])
       .returning();
 
-    const createdConversation = await db.query.conversation.findFirst({
-      where: (conversation, { eq }) => eq(conversation.id, newConversation.id),
+    const createdConversation = await db.query.conversations.findFirst({
+      where: {
+        id: newConversation.id,
+      },
       with: {
-        users: {
-          with: {
-            user: true,
-          },
-        },
+        users: true,
       },
     });
 
     pusherServer.trigger(
       users.map((user) => user.userId),
       "conversation:new",
-      {
-        ...createdConversation,
-        users: createdConversation?.users.map(({ user }) => user),
-      }
+      createdConversation
     );
 
     revalidatePath("/conversations", "layout");

@@ -13,11 +13,15 @@ type MessageBoxProps = {
   currentUser: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>;
 };
 
-const MessageBox: React.FC<MessageBoxProps> = ({ isLast, data, currentUser }) => {
+const MessageBox: React.FC<MessageBoxProps> = ({
+  isLast,
+  data,
+  currentUser,
+}) => {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   const isOwn = currentUser.id === data?.sender?.id;
-  const seenList = (data.seen || [])
+  const seenList = (data.seenBy || [])
     .filter((user) => user.email !== data?.sender?.email)
     .map((user) => user.name)
     .join(", ");
@@ -41,7 +45,7 @@ const MessageBox: React.FC<MessageBoxProps> = ({ isLast, data, currentUser }) =>
       </div>
       <div className={body}>
         <div className="flex items-center gap-1">
-          <div className="text-sm text-gray-500">{data.sender.name}</div>
+          <div className="text-sm text-gray-500">{data.sender?.name}</div>
           <div className="text-xs text-gray-400">
             {format(new Date(data.createdAt), "p")}
           </div>

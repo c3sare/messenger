@@ -10,7 +10,9 @@ export const signInWithCredentials = action
   .schema(signInSchema)
   .action(async ({ parsedInput: { email, password } }) => {
     const user = await db.query.users.findFirst({
-      where: (user, { eq }) => eq(user.email, email),
+      where: {
+        email,
+      },
     });
 
     if (

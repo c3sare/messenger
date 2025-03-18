@@ -2,25 +2,26 @@ import { db } from "@/drizzle";
 
 const getMessages = async (conversationId: number) => {
   try {
-    const messages = await db.query.message.findMany({
-      where: (message, { eq }) => eq(message.conversationId, conversationId),
+    const messages = await db.query.messages.findMany({
+      where: {
+        conversationId,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
       with: {
         sender: true,
         seenBy: {
-          with: {
-            user: {
-              columns: {
-                hashedPassword: false,
-              },
-            },
+          columns: {
+            hashedPassword: false,
           },
         },
       },
-      orderBy: (message, { asc }) => asc(message.createdAt),
     });
 
     return messages;
-  } catch (error: any) {
+  } catch (error) {
+    console.error(error);
     return null;
   }
 };

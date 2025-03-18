@@ -6,7 +6,7 @@ import github from "next-auth/providers/github";
 import credentials from "next-auth/providers/credentials";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: DrizzleAdapter(db),
+  adapter: DrizzleAdapter(db as never),
   providers: [
     google,
     github,
@@ -22,7 +22,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async ({ email }) => {
         const user = await db.query.users.findFirst({
-          where: (user, { eq }) => eq(user.email, email as string),
+          where: {
+            email: email!,
+          },
         });
 
         if (!user) throw new Error("User not found");

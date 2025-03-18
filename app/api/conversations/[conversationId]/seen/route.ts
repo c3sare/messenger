@@ -2,7 +2,7 @@ import getCurrentUser from "@/actions/getCurrentUser";
 import { NextResponse } from "next/server";
 import { db } from "@/drizzle";
 import { pusherServer } from "@/lib/pusher";
-import { messageRead } from "@/drizzle/schema";
+import { messageReads } from "@/drizzle/schema";
 
 interface IParams {
   conversationId: string;
@@ -23,8 +23,10 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const conversation = await db.query.conversation.findFirst({
-      where: (conversation, { eq }) => eq(conversation.id, conversationId),
+    const conversation = await db.query.conversations.findFirst({
+      where: {
+        id: conversationId,
+      },
       with: {
         messages: {
           with: {
@@ -46,22 +48,24 @@ export async function POST(
     }
 
     await db
-      .insert(messageRead)
+      .insert(messageReads)
       .values({
         userId: currentUser.id,
         messageId: lastMessage.id,
       })
       .onConflictDoNothing();
 
-    const { seenBy, ...updateMessage } = (await db.query.message.findFirst({
-      where: (message, { eq }) => eq(message.id, lastMessage.id),
+    const { seenBy, ...updateMessage } = (await db.query.messages.findFirst({
+      where: {
+        id: lastMessage.id,
+      },
       with: {
         sender: true,
         seenBy: true,
       },
     }))!;
 
-    const seenIds = seenBy.map((item) => item.userId);
+    const seenIds = seenBy.map((item) => item.id);
 
     await pusherServer.trigger(currentUser.id, "conversation:update", {
       id: conversationId,
