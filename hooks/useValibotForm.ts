@@ -18,7 +18,7 @@ export const useValibotForm = <
 }: PropsType<Z>) => {
   const [isLoading, startTransition] = useTransition();
   const form = useForm<v.InferInput<typeof schema>>({
-    resolver: valibotResolver(schema),
+    resolver: valibotResolver(schema) as ReturnType<typeof valibotResolver>,
     ...props,
   });
 

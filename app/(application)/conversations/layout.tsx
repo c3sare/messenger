@@ -8,6 +8,8 @@ type Props = {
   children?: React.ReactNode;
 };
 
+export const dynamic = "force-dynamic";
+
 const ConversationsLayout = ({ children }: Props) => {
   return (
     <>
