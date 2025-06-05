@@ -4,4 +4,4 @@ import { relations } from "./relations";
 
 const client = neon(process.env.DATABASE_URL!);
 
-export const db = drizzle({ client, relations });
+export const db = drizzle({ client, relations, casing: "snake_case" });

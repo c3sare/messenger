@@ -10,7 +10,7 @@ export const users = pgTable("user", (t) => ({
   name: t.text(),
   email: t.text().notNull(),
   hashedPassword: t.text(),
-  emailVerified: t.timestamp({ mode: "date" }),
+  emailVerified: t.timestamp("emailVerified", { mode: "date" }),
   image: t.text(),
   createdAt: t
     .timestamp({ mode: "date" })
@@ -22,12 +22,12 @@ export const accounts = pgTable(
   "account",
   (t) => ({
     userId: t
-      .text()
+      .text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     type: t.text().$type<AdapterAccountType>().notNull(),
     provider: t.text().notNull(),
-    providerAccountId: t.text().notNull(),
+    providerAccountId: t.text("providerAccountId").notNull(),
     refresh_token: t.text(),
     access_token: t.text(),
     expires_at: t.integer(),
@@ -44,9 +44,9 @@ export const accounts = pgTable(
 );
 
 export const sessions = pgTable("session", (t) => ({
-  sessionToken: t.text().primaryKey(),
+  sessionToken: t.text("sessionToken").primaryKey(),
   userId: t
-    .text()
+    .text("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   expires: t.timestamp({ mode: "date" }).notNull(),
@@ -60,6 +60,28 @@ export const verificationTokens = pgTable(
     expires: t.timestamp({ mode: "date" }).notNull(),
   }),
   (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })]
+);
+
+export const authenticators = pgTable(
+  "authenticator",
+  (t) => ({
+    credentialID: t.text("credentialID").notNull().unique(),
+    userId: t
+      .text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    providerAccountId: t.text("providerAccountId").notNull(),
+    credentialPublicKey: t.text("credentialPublicKey").notNull(),
+    counter: t.integer().notNull(),
+    credentialDeviceType: t.text("credentialDeviceType").notNull(),
+    credentialBackedUp: t.boolean("credentialBackedUp").notNull(),
+    transports: t.text(),
+  }),
+  (authenticator) => [
+    primaryKey({
+      columns: [authenticator.userId, authenticator.credentialID],
+    }),
+  ]
 );
 
 export const conversationUsers = pgTable(
