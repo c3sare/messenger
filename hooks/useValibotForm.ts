@@ -1,45 +1,33 @@
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { useMemo } from "react";
+import { FieldValues, useForm, UseFormProps } from "react-hook-form";
 import * as v from "valibot";
 
-type PropsType<Z extends Parameters<typeof valibotResolver>[0]> = Omit<
-  NonNullable<Parameters<typeof useForm<v.InferInput<Z>>>[0]>,
+type PropsType<TFormValues extends FieldValues> = Omit<
+  UseFormProps<TFormValues>,
   "resolver"
 > & {
-  schema: Z;
+  schema: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | v.BaseSchema<TFormValues, TFormValues, any>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    | v.BaseSchemaAsync<TFormValues, TFormValues, any>;
 };
 
-export const useValibotForm = <
-  Z extends Parameters<typeof valibotResolver>[0]
->({
+export const useValibotForm = <Z extends FieldValues>({
   schema,
   ...props
 }: PropsType<Z>) => {
-  const [isLoading, startTransition] = useTransition();
-  const form = useForm<v.InferInput<typeof schema>>({
-    resolver: valibotResolver(schema) as ReturnType<typeof valibotResolver>,
+  const form = useForm<Z>({
+    resolver: valibotResolver(schema),
     ...props,
   });
 
-  return {
-    ...form,
-    isLoading,
-    handleSubmit: (
-      onValid: Parameters<typeof form.handleSubmit>[0],
-      onInvalid?: Parameters<typeof form.handleSubmit>[1]
-    ) =>
-      form.handleSubmit(
-        (data) =>
-          startTransition(() => {
-            onValid(data);
-          }),
-        onInvalid
-          ? (data) =>
-              startTransition(() => {
-                onInvalid(data);
-              })
-          : undefined
-      ),
-  };
+  const { isDirty, isLoading, isSubmitting, isValidating } = form.formState;
+
+  const disabledSubmit = useMemo(
+    () => !isDirty || isLoading || isSubmitting || isValidating,
+    [isDirty, isLoading, isSubmitting, isValidating]
+  );
+
+  return { ...form, disabledSubmit };
 };

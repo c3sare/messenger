@@ -10,7 +10,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { format } from "date-fns";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { Calendar } from "@/components/ui/calendar";
@@ -37,11 +41,18 @@ const FormDatePicker = <T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      disabled={disabled}
+      render={({
+        field: { disabled, ...field },
+        formState: { isLoading, isSubmitting },
+      }) => (
         <FormItem className="flex flex-col">
           <FormLabel>{label}</FormLabel>
           <Popover>
-            <PopoverTrigger asChild disabled={disabled}>
+            <PopoverTrigger
+              asChild
+              disabled={disabled || isLoading || isSubmitting}
+            >
               <FormControl>
                 <Button
                   variant={"outline"}

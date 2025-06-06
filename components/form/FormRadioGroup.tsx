@@ -43,14 +43,17 @@ const FormRadioGroup = <T extends FieldValues>({
       name={name}
       disabled={disabled}
       defaultValue={defaultValue}
-      render={({ field }) => (
+      render={({
+        field: { disabled, ...field },
+        formState: { isLoading, isSubmitting },
+      }) => (
         <FormItem className="space-y-3">
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
               value={field.value}
-              disabled={field.disabled}
+              disabled={disabled || isLoading || isSubmitting}
               className={cn("flex flex-col space-y-1", className)}
             >
               {options.map((option) => {

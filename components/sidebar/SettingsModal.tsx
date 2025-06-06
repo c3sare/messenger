@@ -41,12 +41,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser }) => {
       <form onSubmit={onSubmit}>
         <div className="border-b border-gray-900/10 pb-6">
           <div className="flex flex-col gap-y-8">
-            <FormInput
-              control={form.control}
-              disabled={form.isLoading}
-              label="Name"
-              name="name"
-            />
+            <FormInput control={form.control} label="Name" name="name" />
             <div>
               <label className="block text-sm font-medium leading-6 text-gray-900">
                 Photo
@@ -74,11 +69,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser }) => {
                     process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
                   }
                 >
-                  <Button
-                    disabled={form.isLoading}
-                    variant="secondary"
-                    type="button"
-                  >
+                  <Button variant="secondary" type="button">
                     Change
                   </Button>
                 </CldUploadButton>
@@ -87,7 +78,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser }) => {
           </div>
         </div>
         <div className="mt-6 flex items-center justify-end gap-x-6">
-          <Button disabled={form.isLoading} type="submit">
+          <Button disabled={form.disabledSubmit} type="submit">
             Save
           </Button>
         </div>

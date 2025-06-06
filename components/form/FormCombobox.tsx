@@ -55,11 +55,17 @@ const FormCombobox = <T extends FieldValues>({
       name={name}
       disabled={disabled}
       defaultValue={defaultValue}
-      render={({ field }) => (
+      render={({
+        field: { disabled, ...field },
+        formState: { isLoading, isSubmitting },
+      }) => (
         <FormItem className="flex flex-col">
           <FormLabel>{label}</FormLabel>
           <Popover>
-            <PopoverTrigger asChild disabled={field.disabled}>
+            <PopoverTrigger
+              asChild
+              disabled={disabled || isLoading || isSubmitting}
+            >
               <FormControl>
                 <Button
                   name={field.name}

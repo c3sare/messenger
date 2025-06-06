@@ -39,13 +39,17 @@ const FormTextarea = <T extends FieldValues>({
       name={name}
       disabled={disabled}
       defaultValue={defaultValue}
-      render={({ field }) => (
+      render={({
+        field: { disabled, ...field },
+        formState: { isLoading, isSubmitting },
+      }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
             <Textarea
               placeholder={placeholder}
               className={cn("resize-none", className)}
+              disabled={disabled || isLoading || isSubmitting}
               {...field}
             />
           </FormControl>

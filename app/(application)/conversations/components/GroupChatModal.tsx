@@ -41,12 +41,7 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({ users }) => {
               Create a chat with more than 2 people.
             </p>
             <div className="mt-10 flex flex-col gap-y-8">
-              <FormInput
-                control={form.control}
-                label="Name"
-                name="name"
-                disabled={form.isLoading}
-              />
+              <FormInput control={form.control} label="Name" name="name" />
               <FormMultiSelect
                 control={form.control}
                 label="Members"
@@ -55,13 +50,12 @@ const GroupChatModal: React.FC<GroupChatModalProps> = ({ users }) => {
                   value: user.id,
                   label: user.name ?? "Empty",
                 }))}
-                disabled={form.isLoading}
               />
             </div>
           </div>
         </div>
         <div className="mt-6 flex items-center justify-end gap-x-6">
-          <Button disabled={form.isLoading} type="submit">
+          <Button disabled={form.disabledSubmit} type="submit">
             Create
           </Button>
         </div>

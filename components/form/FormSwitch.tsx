@@ -28,7 +28,7 @@ const FormSwitch = <T extends FieldValues>({
   label,
   className,
   disabled,
-  defaultValue
+  defaultValue,
 }: FormSwitchProps<T>) => {
   return (
     <FormField
@@ -36,7 +36,10 @@ const FormSwitch = <T extends FieldValues>({
       name={name}
       disabled={disabled}
       defaultValue={defaultValue}
-      render={({ field: { value, onChange, ...rest } }) => (
+      render={({
+        field: { value, onChange, disabled, ...rest },
+        formState: { isLoading, isSubmitting },
+      }) => (
         <FormItem
           className={cn(
             "flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm",
@@ -48,7 +51,12 @@ const FormSwitch = <T extends FieldValues>({
             {!!description && <FormDescription>{description}</FormDescription>}
           </div>
           <FormControl>
-            <Switch checked={value} onCheckedChange={onChange} {...rest} />
+            <Switch
+              checked={value}
+              onCheckedChange={onChange}
+              disabled={disabled || isLoading || isSubmitting}
+              {...rest}
+            />
           </FormControl>
         </FormItem>
       )}

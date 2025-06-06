@@ -37,26 +37,15 @@ export const RegisterForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={onSubmit} className="space-y-6">
-        <FormInput
-          control={form.control}
-          name="name"
-          label="Name"
-          disabled={form.isLoading}
-        />
-        <FormInput
-          control={form.control}
-          name="email"
-          label="E-mail"
-          disabled={form.isLoading}
-        />
+        <FormInput control={form.control} name="name" label="Name" />
+        <FormInput control={form.control} name="email" label="E-mail" />
         <FormInput
           control={form.control}
           name="password"
           label="Password"
           type="password"
-          disabled={form.isLoading}
         />
-        <Button disabled={form.isLoading} type="submit" className="w-full">
+        <Button disabled={form.disabledSubmit} type="submit" className="w-full">
           Register
         </Button>
       </form>

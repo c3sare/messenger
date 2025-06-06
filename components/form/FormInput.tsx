@@ -45,7 +45,10 @@ export const FormInput = <T extends FieldValues>({
       name={name}
       disabled={disabled}
       defaultValue={defaultValue}
-      render={({ field }) => (
+      render={({
+        field: { disabled, ...field },
+        formState: { isLoading, isSubmitting },
+      }) => (
         <FormItem className={className}>
           <FormLabel>{label}</FormLabel>
           <FormControl>
@@ -53,6 +56,7 @@ export const FormInput = <T extends FieldValues>({
               type={type}
               placeholder={placeholder}
               autoComplete={autoComplete}
+              disabled={disabled || isLoading || isSubmitting}
               {...field}
               onChange={(e) => {
                 void field.onChange(e);

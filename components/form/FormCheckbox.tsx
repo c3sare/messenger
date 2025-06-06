@@ -36,7 +36,10 @@ const FormCheckbox = <T extends FieldValues>({
       name={name}
       disabled={disabled}
       defaultValue={defaultValue}
-      render={({ field: { value, onChange, ...rest } }) => (
+      render={({
+        field: { value, onChange, disabled, ...rest },
+        formState: { isLoading, isSubmitting },
+      }) => (
         <FormItem
           className={cn(
             "flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow",
@@ -44,7 +47,12 @@ const FormCheckbox = <T extends FieldValues>({
           )}
         >
           <FormControl>
-            <Checkbox checked={value} onCheckedChange={onChange} {...rest} />
+            <Checkbox
+              checked={value}
+              onCheckedChange={onChange}
+              disabled={disabled || isLoading || isSubmitting}
+              {...rest}
+            />
           </FormControl>
           <div className="space-y-1 leading-none">
             <FormLabel>{label}</FormLabel>
