@@ -16,7 +16,7 @@
 - Shadcn/ui
 - React-hook-form
 - Next-safe-actions
-- Valibot
+- Zod v4 mini
 - Cloudinary
 
 ## Features

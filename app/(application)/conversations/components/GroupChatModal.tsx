@@ -4,8 +4,8 @@ import { FormInput } from "@/components/form/FormInput";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { users } from "@/drizzle/schema";
-import { useValibotForm } from "@/hooks/useValibotForm";
-import * as v from "valibot";
+import { useZodForm } from "@/hooks/useZodForm";
+import { z } from "zod/v4-mini";
 import { FormMultiSelect } from "@/components/form/FormMultiSelect";
 import { createConversation } from "@/actions/mutations/createConversation";
 
@@ -14,10 +14,10 @@ type GroupChatModalProps = {
 };
 
 const GroupChatModal: React.FC<GroupChatModalProps> = ({ users }) => {
-  const form = useValibotForm({
-    schema: v.object({
-      name: v.pipe(v.string(), v.minLength(3)),
-      members: v.pipe(v.array(v.string()), v.minLength(1)),
+  const form = useZodForm({
+    schema: z.object({
+      name: z.string().check(z.minLength(3)),
+      members: z.array(z.string().check(z.minLength(1))),
     }),
     defaultValues: {
       name: "",

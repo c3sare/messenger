@@ -1,7 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 
-type MobileItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+type MobileItemProps = React.DetailedHTMLProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+> & {
   asChild?: boolean;
 };
 
@@ -11,8 +14,7 @@ const MobileItem: React.FC<MobileItemProps> = ({
   className,
   ...props
 }) => {
-
-  const Comp = asChild ? Slot : "button";
+  const Comp = asChild ? Slot.Root : "button";
 
   return (
     <Comp

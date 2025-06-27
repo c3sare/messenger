@@ -1,12 +1,7 @@
-import * as v from "valibot";
+import { z } from "zod/v4-mini";
 
-export const registerSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(3), v.maxLength(20)),
-  email: v.pipe(
-    v.string(),
-    v.email("Invalid email"),
-    v.minLength(3),
-    v.maxLength(20)
-  ),
-  password: v.pipe(v.string(), v.minLength(8), v.maxLength(20)),
+export const registerSchema = z.object({
+  name: z.string().check(z.minLength(3), z.maxLength(20)),
+  email: z.email().check(z.minLength(3), z.maxLength(20)),
+  password: z.string().check(z.minLength(8), z.maxLength(20)),
 });

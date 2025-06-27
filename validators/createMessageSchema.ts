@@ -1,7 +1,7 @@
-import * as v from "valibot";
+import { z } from "zod/v4-mini";
 
-export const createMessageSchema = v.object({
-  conversationId: v.number(),
-  image: v.optional(v.string()),
-  body: v.optional(v.string()),
+export const createMessageSchema = z.object({
+  conversationId: z.number(),
+  image: z.optional(z.string()),
+  body: z.optional(z.string()),
 });

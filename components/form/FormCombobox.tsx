@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { ChevronsUpDownIcon, CheckIcon } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -80,7 +80,7 @@ const FormCombobox = <T extends FieldValues>({
                     ? options.find((option) => option.value === field.value)
                         ?.label
                     : placeholder}
-                  <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </FormControl>
             </PopoverTrigger>

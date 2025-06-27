@@ -1,6 +1,6 @@
 "use client";
 
-import { useValibotForm } from "@/hooks/useValibotForm";
+import { useZodForm } from "@/hooks/useZodForm";
 import { FormInput } from "@/components/form/FormInput";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { signInWithCredentials } from "@/actions/auth/signInWithCredentials";
 import { toast } from "sonner";
 
 export const LoginForm = () => {
-  const form = useValibotForm({
+  const form = useZodForm({
     schema: signInSchema,
   });
 

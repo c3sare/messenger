@@ -1,6 +1,6 @@
-import * as v from "valibot";
+import { z } from "zod/v4-mini";
 
-export const settingSchema = v.object({
-  name: v.pipe(v.string(), v.minLength(3), v.maxLength(30)),
-  image: v.nullable(v.optional(v.pipe(v.string(), v.url()))),
+export const settingSchema = z.object({
+  name: z.string().check(z.minLength(3), z.maxLength(30)),
+  image: z.nullable(z.optional(z.url())),
 });

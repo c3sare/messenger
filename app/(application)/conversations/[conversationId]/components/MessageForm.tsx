@@ -3,17 +3,17 @@
 import useConversation from "@/hooks/useConversation";
 import { CldUploadButton } from "next-cloudinary";
 import { CameraIcon, SendHorizonalIcon } from "lucide-react";
-import { useValibotForm } from "@/hooks/useValibotForm";
-import * as v from "valibot";
+import { useZodForm } from "@/hooks/useZodForm";
+import { z } from "zod/v4-mini";
 import { Form } from "@/components/ui/form";
 import { createMessage } from "@/actions/mutations/createMessage";
 
 const MessageForm = () => {
   const { conversationId } = useConversation();
 
-  const form = useValibotForm({
-    schema: v.object({
-      message: v.string(),
+  const form = useZodForm({
+    schema: z.object({
+      message: z.string(),
     }),
     defaultValues: {
       message: "",

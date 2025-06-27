@@ -4,7 +4,7 @@ import { db } from "@/drizzle";
 import { users } from "@/drizzle/schema";
 import { action } from "@/lib/safe-action";
 import { registerSchema } from "@/validators/auth/registerSchema";
-import bcrypt from "bcrypt-edge";
+import bcrypt from "bcryptjs";
 
 export const registerUser = action
   .schema(registerSchema)

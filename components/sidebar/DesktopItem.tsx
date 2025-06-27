@@ -1,7 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 
-type DekstopItemProps = React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement> & {
+type DekstopItemProps = React.DetailedHTMLProps<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+> & {
   asChild?: boolean;
 };
 
@@ -11,13 +14,13 @@ const DesktopItem: React.FC<DekstopItemProps> = ({
   asChild,
   ...props
 }) => {
-
-  const Comp = asChild ? Slot : "button";
+  const Comp = asChild ? Slot.Root : "button";
 
   return (
     <Comp
-      className={cn("group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold text-gray-500 hover:text-black hover:bg-gray-100 [&>svg]:size-6 [&>svg]:shrink-0",
-        className,
+      className={cn(
+        "group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold text-gray-500 hover:text-black hover:bg-gray-100 [&>svg]:size-6 [&>svg]:shrink-0",
+        className
       )}
       {...props}
     >

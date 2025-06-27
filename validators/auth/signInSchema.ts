@@ -1,11 +1,6 @@
-import * as v from "valibot";
+import { z } from "zod/v4-mini";
 
-export const signInSchema = v.object({
-  email: v.pipe(
-    v.string(),
-    v.email("Invalid email"),
-    v.minLength(3),
-    v.maxLength(20)
-  ),
-  password: v.pipe(v.string(), v.minLength(8), v.maxLength(20)),
+export const signInSchema = z.object({
+  email: z.email().check(z.minLength(3), z.maxLength(20)),
+  password: z.string().check(z.minLength(8), z.maxLength(20)),
 });

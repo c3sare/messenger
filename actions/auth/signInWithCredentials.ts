@@ -4,7 +4,7 @@ import { signIn } from "@/auth";
 import { db } from "@/drizzle";
 import { action } from "@/lib/safe-action";
 import { signInSchema } from "@/validators/auth/signInSchema";
-import bcrypt from "bcrypt-edge";
+import bcrypt from "bcryptjs";
 
 export const signInWithCredentials = action
   .schema(signInSchema)

@@ -1,24 +1,21 @@
-import { valibotResolver } from "@hookform/resolvers/valibot";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
 import { FieldValues, useForm, UseFormProps } from "react-hook-form";
-import * as v from "valibot";
+import * as z from "zod/v4-mini";
 
 type PropsType<TFormValues extends FieldValues> = Omit<
   UseFormProps<TFormValues>,
   "resolver"
 > & {
-  schema: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  | v.BaseSchema<TFormValues, TFormValues, any>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    | v.BaseSchemaAsync<TFormValues, TFormValues, any>;
+  schema: z.ZodMiniType<TFormValues, TFormValues>;
 };
 
-export const useValibotForm = <Z extends FieldValues>({
+export const useZodForm = <TFormValues extends FieldValues>({
   schema,
   ...props
-}: PropsType<Z>) => {
-  const form = useForm<Z>({
-    resolver: valibotResolver(schema),
+}: PropsType<TFormValues>) => {
+  const form = useForm<TFormValues>({
+    resolver: zodResolver(schema),
     ...props,
   });
 

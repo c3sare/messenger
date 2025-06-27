@@ -5,7 +5,7 @@ import Image from "next/image";
 import { CldUploadButton } from "next-cloudinary";
 import { toast } from "sonner";
 import { FormInput } from "../form/FormInput";
-import { useValibotForm } from "@/hooks/useValibotForm";
+import { useZodForm } from "@/hooks/useZodForm";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
 import { updateSettings } from "@/actions/mutations/updateSettings";
@@ -16,7 +16,7 @@ type SettingsModalProps = {
 };
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ currentUser }) => {
-  const form = useValibotForm({
+  const form = useZodForm({
     schema: settingSchema,
     defaultValues: {
       name: currentUser?.name ?? "",
