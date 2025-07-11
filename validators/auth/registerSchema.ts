@@ -1,4 +1,4 @@
-import { z } from "zod/v4-mini";
+import { z } from "zod/mini";
 
 export const registerSchema = z.object({
   name: z.string().check(z.minLength(3), z.maxLength(20)),

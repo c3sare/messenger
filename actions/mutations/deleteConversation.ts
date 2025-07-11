@@ -7,7 +7,7 @@ import { authAction } from "@/lib/safe-action";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { z } from "zod/v4-mini";
+import { z } from "zod/mini";
 
 export const deleteConversation = authAction.inputSchema(z.number()).action(
   async ({

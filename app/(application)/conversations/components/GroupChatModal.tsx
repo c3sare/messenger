@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { users } from "@/drizzle/schema";
 import { useZodForm } from "@/hooks/useZodForm";
-import { z } from "zod/v4-mini";
+import { z } from "zod/mini";
 import { FormMultiSelect } from "@/components/form/FormMultiSelect";
 import { createConversation } from "@/actions/mutations/createConversation";
 

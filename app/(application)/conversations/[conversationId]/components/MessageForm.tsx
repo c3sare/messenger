@@ -4,7 +4,7 @@ import useConversation from "@/hooks/useConversation";
 import { CldUploadButton } from "next-cloudinary";
 import { CameraIcon, SendHorizonalIcon } from "lucide-react";
 import { useZodForm } from "@/hooks/useZodForm";
-import { z } from "zod/v4-mini";
+import { z } from "zod/mini";
 import { Form } from "@/components/ui/form";
 import { createMessage } from "@/actions/mutations/createMessage";
 
